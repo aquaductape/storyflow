@@ -1,25 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useContext } from "react";
+import "./App.scss";
+import FlowProvider from "./context/FlowProvider";
+import FlowArea from "./components/FlowChart/FlowArea";
+import ContextMenu from "./components/ContextMenu";
+import { MenuProvider } from "react-contexify";
+import Header from "./components/Header";
 
 function App() {
+  const [flowAreaZoom, setFlowAreaZoom] = useState(100);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="App">
+        <FlowProvider>
+          <Header zoomState={{ flowAreaZoom, setFlowAreaZoom }}></Header>
+          <MenuProvider id="flow-context-menu-root" className="menu-provider">
+            <FlowArea zoomState={{ flowAreaZoom, setFlowAreaZoom }}></FlowArea>
+          </MenuProvider>
+          <ContextMenu></ContextMenu>
+        </FlowProvider>
+      </div>
+    </>
   );
 }
 

@@ -1,0 +1,82 @@
+import React, { useState, useRef } from "react";
+import { FlowDraggable } from "../../models/FlowShape";
+import Draggable from "react-draggable";
+import FlowControl from "./FlowControl";
+import DecisionAnswers from "./DecisionAnswers";
+
+export default function Decision({
+  id,
+  isConnected,
+  content,
+  arrowConnectState,
+  answers,
+  position: { top, left, translateX, translateY },
+  dragState,
+  onBlur
+}: FlowDraggable) {
+  // const [isConnected, setIsConnected] = useState(false);
+  const { dragHandlers, onDrag, onStart, onStop } = dragState;
+  const elementRef = useRef<HTMLDivElement>(null);
+  let direction = "From";
+  let parentId = id;
+  const onChangeDirection = () => {
+    // change array data by grabbing id
+  };
+  const onCreateArrow = () => {
+    // setIsConnected(() => true);
+  };
+
+  return (
+    <>
+      <Draggable
+        {...dragHandlers}
+        onStart={onStart}
+        onStop={() => onStop({ id, element: elementRef.current! })}
+        onDrag={(e, ui) => {
+          onDrag({ id, isConnected });
+        }}
+        defaultPosition={{ x: translateX, y: translateY }}
+      >
+        <div
+          id={id}
+          className="flow-shape flow-decision"
+          style={{
+            position: "absolute",
+            top: `${top || 0}px`,
+            left: `${left || 0}px`
+          }}
+          ref={elementRef}
+        >
+          Decision
+          <div
+            className="textareaInput flow-decision-content"
+            onBlur={e => onBlur(e, id)}
+            contentEditable={true}
+            suppressContentEditableWarning={true}
+          >
+            {content}
+          </div>
+          <FlowControl
+            {...{ id, direction, onChangeDirection, onCreateArrow }}
+          ></FlowControl>
+        </div>
+      </Draggable>
+
+      {answers
+        ? answers.map(({ id, top, left, content, translateX, translateY }) => (
+            <DecisionAnswers
+              arrowConnectState={arrowConnectState}
+              id={id}
+              parentId={parentId}
+              position={{ top, left, translateX, translateY }}
+              content={content}
+              onBlur={onBlur}
+              dragState={dragState}
+              isConnected={isConnected}
+              key={id}
+            ></DecisionAnswers>
+          ))
+        : null}
+    </>
+  );
+}
