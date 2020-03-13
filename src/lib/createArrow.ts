@@ -1,7 +1,7 @@
 import { connectElementsCooridinates } from "./connectElementsCooridinates";
 import { v4 as uuid } from "uuid";
 import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
-import { FlowNodeUI } from "../models/FlowJsonData";
+import { FlowNodeUI } from "../models/FlowInstructionData";
 import { ISVGArrow } from "../models/SVGArrow";
 
 export const onCreateArrow = async ({
@@ -20,7 +20,7 @@ export const onCreateArrow = async ({
   scrollPosition: FlowScrollPosition;
 }) => {
   let fromId = "";
-  let questionId = "";
+  let answerId = "";
   console.log(
     "fromId ",
     isFlowConnecting.fromId,
@@ -54,7 +54,7 @@ export const onCreateArrow = async ({
     const source = prev.find(item => item.id === fromId)!;
     const target = prev.find(item => item.id === currentTarget.id)!;
 
-    source.arrowTo.push(currentTarget.id);
+    source.arrowTo = currentTarget.id;
     target.arrowFrom.push(fromId);
     source.isConnected = true;
     target.isConnected = true;
@@ -67,30 +67,31 @@ export const onCreateArrow = async ({
         .getElementById(target.id)!
         .getBoundingClientRect();
 
-      questionId = uuid();
+      answerId = uuid();
       if (!source.answers) {
         source.answers = [];
       }
       source.answers!.push({
-        id: questionId,
+        id: answerId,
         arrowFrom: [fromId],
         arrowTo: currentTarget.id,
         content: "yes/no",
         left:
-          (sourceBounding.left + targetBounding.left) / 2 + scrollPosition.left,
+          (sourceBounding.left + targetBounding.right) / 2 +
+          scrollPosition.left,
         top: (sourceBounding.top + targetBounding.top) / 2 + scrollPosition.top,
-        translateX: 0,
-        translateY: 0
+        translateX: -50,
+        translateY: -50
       });
     }
     return [...prev];
   });
 
-  if (questionId) {
+  if (answerId) {
     // source to quesiton
     let elementsCooridinates = connectElementsCooridinates({
       fromId,
-      toId: questionId,
+      toId: answerId,
       color: "#000",
       tension: 0
     });
@@ -100,11 +101,11 @@ export const onCreateArrow = async ({
     elementsCooridinates.y1 += scrollPosition.top;
     elementsCooridinates.y2 += scrollPosition.top;
 
-    const result = [{ ...elementsCooridinates, fromId, toId: questionId }];
+    const result = [{ ...elementsCooridinates, fromId, toId: answerId }];
     // question to target
     elementsCooridinates = connectElementsCooridinates({
-      toId: questionId,
-      fromId: currentTarget.id,
+      toId: currentTarget.id,
+      fromId: answerId,
       color: "#000",
       tension: 0
     });
@@ -116,7 +117,7 @@ export const onCreateArrow = async ({
 
     result.push({
       ...elementsCooridinates,
-      fromId: questionId,
+      fromId: answerId,
       toId: currentTarget.id
     });
 
@@ -124,8 +125,10 @@ export const onCreateArrow = async ({
   } else {
     console.log(fromId, currentTarget.id);
     const elementsCooridinates = connectElementsCooridinates({
-      fromId: currentTarget.id,
-      toId: fromId,
+      // fromId: currentTarget.id,
+      // toId: fromId,
+      fromId,
+      toId: currentTarget.id,
       color: "#000",
       tension: 0
     });

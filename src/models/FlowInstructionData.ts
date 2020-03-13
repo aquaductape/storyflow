@@ -1,6 +1,6 @@
 type Answers = {
   m: string;
-  next: string;
+  next: number | string | undefined;
 };
 
 export interface FlowJsonData {
@@ -8,8 +8,15 @@ export interface FlowJsonData {
   m?: string;
   index: number;
   question?: string;
-  next?: string;
+  next: number | string | undefined;
   answers?: Answers[];
+}
+
+export interface FlowInstruction {
+  currentIdx: number;
+  getCurrentItem(): FlowJsonData;
+  reset(): void;
+  next(answer?: string | undefined): true | null;
 }
 
 export type FlowType = "decision" | "process" | "start" | "exit";
@@ -18,7 +25,7 @@ export interface FlowNodeUI {
   id: string;
   top: number;
   left: number;
-  arrowTo: string[];
+  arrowTo: string;
   arrowFrom: string[];
   translateX: number;
   translateY: number;

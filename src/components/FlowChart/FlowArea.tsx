@@ -1,30 +1,27 @@
 import React, { useState, useContext, useEffect } from "react";
 import Draggable, { DraggableEvent } from "react-draggable";
-// @ts-ignore
-import Minimap from "react-minimap";
 
 import FlowContext from "../../context/FlowContext";
 import FlowShape from "./FlowShape";
 import { connectElementsCooridinates } from "../../lib/connectElementsCooridinates";
 import SVGArrowContainer from "./SVGArrowContainer";
-import { FlowNodeUI } from "../../models/FlowJsonData";
+import { FlowNodeUI } from "../../models/FlowInstructionData";
 import { onCreateArrow } from "../../lib/createArrow";
 import { convertToText } from "../../lib/contentEditable";
 import lsStorage from "../../lib/lsStorage";
+import {
+  removeNode,
+  removeAllArrows,
+  removeArrow
+} from "../../lib/removeShape";
 
-export default function FlowArea({
-  zoomState: { flowAreaZoom, setFlowAreaZoom }
-}: {
-  zoomState: {
-    flowAreaZoom: number;
-    setFlowAreaZoom: React.Dispatch<React.SetStateAction<number>>;
-  };
-}) {
+export default function FlowArea() {
   const {
     flowNodeUIState: { flowNodeUI, setFlowNodeUI },
     flowConnectState: { isFlowConnecting, setFlowConnecting },
     svgArrowState: { setSvgArrows },
-    scrollPositionState: { scrollPosition, setScrollPosition }
+    scrollPositionState: { scrollPosition, setScrollPosition },
+    flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
   const [activeDrags, setActiveDrags] = useState(0);
 
@@ -51,6 +48,18 @@ export default function FlowArea({
       });
       return false;
     }
+    if (target.closest(".flow-btn-remove-node")) {
+      console.log("remove node");
+      removeNode({ currentTarget, setFlowNodeUI });
+      removeAllArrows({ currentTarget, setSvgArrows });
+      return false;
+    }
+    // *** better to pass these as functions, instead of searching through whole list by element by id ** //
+    if (target.closest(".flow-btn-remove-arrow")) {
+      console.log("remove arrow");
+      removeArrow({ currentTarget, setSvgArrows, setFlowNodeUI });
+      return false;
+    }
     if (target.closest(".flow-btn-change-direction"))
       return onChangeDirection(currentTarget);
   };
@@ -65,6 +74,7 @@ export default function FlowArea({
     parentId?: string;
   }) => {
     const matchTransform = element.style.transform.match(/-?\d+/g);
+    console.log("stop");
 
     if (!matchTransform) return;
 
@@ -100,13 +110,15 @@ export default function FlowArea({
     setSvgArrows(prev => {
       for (let i = 0; i < prev.length; i++) {
         const item = prev[i];
+        const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
         if (item.fromId === id || item.toId === id) {
           const { fromId, toId } = item;
           const updatedCooridinates = connectElementsCooridinates({
             fromId,
             toId,
             color: "#000",
-            tension: 0
+            tension: 0,
+            scale
           });
           updatedCooridinates.x1 += scrollPosition.left;
           updatedCooridinates.x2 += scrollPosition.left;
@@ -158,53 +170,72 @@ export default function FlowArea({
     });
   };
 
-  const flowAreaInnerStyle = {
-    zoom: `${flowAreaZoom}%`
-  };
-
   return (
-    <>
-      {/* <Minimap
-        selector="flow-area-outer"
-        className="flow-area-minimap"
-        keepAspectRation={true}
-      ></Minimap> */}
-      <div className="flow-area-outer" onScroll={onScroll}>
-        <div className="flow-area-inner" style={flowAreaInnerStyle}>
-          <SVGArrowContainer></SVGArrowContainer>
-          {flowNodeUI.map(
-            (
-              {
-                id,
-                type,
-                content,
-                top,
-                left,
-                translateX,
-                translateY,
-                answers,
-                isConnected
-              },
-              idx
-            ) => {
-              return (
-                <FlowShape
-                  id={id}
-                  isConnected={isConnected}
-                  type={type}
-                  arrowConnectState={true}
-                  content={content}
-                  dragState={{ dragHandlers, onStart, onDrag, onStop }}
-                  onBlur={onContentInput}
-                  position={{ left, top, translateX, translateY }}
-                  answers={answers}
-                  key={idx}
-                ></FlowShape>
-              );
-            }
-          )}
-        </div>
+    <div className="flow-area-outer" onScroll={onScroll}>
+      <div className="flow-area-inner">
+        <SVGArrowContainer></SVGArrowContainer>
+        {flowNodeUI.map(
+          (
+            {
+              id,
+              type,
+              content,
+              top,
+              left,
+              translateX,
+              translateY,
+              answers,
+              isConnected,
+              arrowTo
+            },
+            idx
+          ) => {
+            return (
+              <FlowShape
+                id={id}
+                isConnected={isConnected}
+                type={type}
+                arrowConnectState={true}
+                content={content}
+                dragState={{ dragHandlers, onStart, onDrag, onStop }}
+                onBlur={onContentInput}
+                position={{ left, top, translateX, translateY }}
+                answers={answers}
+                arrowTo={arrowTo}
+                key={idx}
+              ></FlowShape>
+            );
+          }
+        )}
       </div>
-    </>
+      <style jsx global>
+        {`
+          .flow-area-inner {
+            transform: scale(${flowAreaZoom / 100});
+            transform-origin: 0 0;
+          }
+          .flow-shape {
+            padding: 30px;
+            border: 2px solid #000;
+            min-width: 225px;
+            background: #fff;
+          }
+          .flow-shape:hover {
+            cursor: grab;
+          }
+          .flow-shape.flow-decision {
+            background: #f6d7a6;
+          }
+
+          .flow-shape.flow-start {
+            background: #b4efbf;
+          }
+
+          .flow-shape.flow-process {
+            background: #d4defa;
+          }
+        `}
+      </style>
+    </div>
   );
 }

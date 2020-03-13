@@ -1,23 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearchMinus, faSearchPlus } from "@fortawesome/free-solid-svg-icons";
 import FlowContext from "../context/FlowContext";
 import { createInstruction } from "../lib/createInstruction";
+import InstructionRunner from "./InstructionRunner";
+import downloadObjectAsJson from "../lib/downloadObjectAsJSON";
 
-export default function Header({
-  zoomState: { flowAreaZoom, setFlowAreaZoom }
-}: {
-  zoomState: {
-    flowAreaZoom: number;
-    setFlowAreaZoom: React.Dispatch<React.SetStateAction<number>>;
-  };
-}) {
+export default function Header() {
   const {
-    flowNodeUIState: { flowNodeUI, setFlowNodeUI },
-    flowConnectState: { isFlowConnecting, setFlowConnecting },
-    svgArrowState: { svgArrows, setSvgArrows },
-    scrollPositionState: { scrollPosition, setScrollPosition }
+    flowNodeUIState: { flowNodeUI },
+    svgArrowState: { svgArrows },
+    flowAreaZoomState: { setFlowAreaZoom }
   } = useContext(FlowContext)!;
+  const [displayRunner, setDisplayRunner] = useState(false);
 
   const onZoom = (zoom: "plus" | "minus") => {
     setFlowAreaZoom(prev => (zoom === "minus" ? prev - 5 : prev + 5));
@@ -30,7 +25,12 @@ export default function Header({
   };
 
   const onRun = () => {
-    createInstruction(flowNodeUI);
+    setDisplayRunner(() => true);
+  };
+
+  const onExport = () => {
+    const data = createInstruction(flowNodeUI);
+    downloadObjectAsJson(data, "storyflow");
   };
   return (
     <header className="main-header">
@@ -44,11 +44,48 @@ export default function Header({
         <div className="toolbar-item" onClick={onSave}>
           Save
         </div>
-        <div className="toolbar-item">Export as JSON</div>
+        <div className="toolbar-item" onClick={onExport}>
+          Export as JSON
+        </div>
         <div className="toolbar-item" onClick={onRun}>
           Run
         </div>
       </div>
+      {displayRunner ? (
+        <InstructionRunner
+          setDisplayRunner={setDisplayRunner}
+        ></InstructionRunner>
+      ) : null}
+      <style jsx>
+        {`
+          .main-header {
+            height: 50px;
+            width: 100%;
+            padding: 5px;
+            background-image: linear-gradient(
+              90.5deg,
+              #d029c7 1.6%,
+              #b64ce9 98.2%
+            );
+          }
+
+          .toolbar {
+            display: flex;
+            align-items: center;
+            height: 100%;
+          }
+          .toolbar-item {
+            color: #fff;
+            font-size: 25px;
+            padding: 5px;
+            // margin-right: 10px;
+            border-right: 1px solid #fff;
+          }
+          .toolbar-item:hover {
+            cursor: pointer;
+          }
+        `}
+      </style>
     </header>
   );
 }

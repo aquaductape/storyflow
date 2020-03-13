@@ -14,7 +14,8 @@ export default function FlowShape({
   dragState,
   answers,
   onBlur,
-  position
+  position,
+  arrowTo
 }: IFlowShape) {
   const [deltaPosition, setDeltaPosition] = useState({
     x: 200,
@@ -44,6 +45,7 @@ export default function FlowShape({
             position,
             answers,
             isConnected,
+            arrowTo,
             onBlur
           }}
         ></Decision>
@@ -58,6 +60,7 @@ export default function FlowShape({
             dragState: { ...dragState, handleDragDelta },
             position,
             isConnected,
+            arrowTo,
             onBlur
           }}
         ></Process>
@@ -72,6 +75,7 @@ export default function FlowShape({
             dragState: { ...dragState, handleDragDelta },
             position,
             isConnected,
+            arrowTo,
             onBlur
           }}
         ></Start>

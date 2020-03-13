@@ -1,4 +1,4 @@
-import { FlowNodeUI } from "../models/FlowJsonData";
+import { FlowNodeUI } from "../models/FlowInstructionData";
 import { ISVGArrow } from "../models/SVGArrow";
 
 const getUINodes = (): FlowNodeUI[] | null => {

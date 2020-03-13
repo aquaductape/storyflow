@@ -1,30 +1,31 @@
-import { FlowNodeUI, FlowJsonData } from "../models/FlowJsonData";
+import { FlowNodeUI, FlowJsonData } from "../models/FlowInstructionData";
 
 interface LooseObject {
-  [key: string]: any;
+  [key: string]: number | undefined;
 }
 export const createInstruction = (flowNodes: FlowNodeUI[]) => {
+  const prevNodeVisited: LooseObject = {};
   let currentNode = flowNodes[0];
   let list: FlowJsonData[] = [];
   let queue = [];
-  const idMap: LooseObject = {};
 
-  if (currentNode.type !== "start") throw new Error("must include a start");
-
+  if (currentNode.type !== "start") {
+    throw new Error("must include a start");
+  }
   queue.push(currentNode);
   let index = 0;
 
   while (queue.length > 0) {
-    debugger;
     currentNode = queue.shift()!;
     const item = <FlowJsonData>{};
     item.index = index;
-    item.id = currentNode.id;
 
-    if (idMap[currentNode.id]) {
-      throw new Error("id already visited");
+    if (prevNodeVisited[currentNode.id]) {
+      continue;
+      // console.log(list);
+      // return list;
     } else {
-      idMap[currentNode.id] = true;
+      prevNodeVisited[currentNode.id] = index;
     }
 
     if (currentNode.type === "decision") {
@@ -32,35 +33,69 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
       item.answers = [];
       const decisionQuestion = currentNode.answers;
       decisionQuestion?.forEach(answer => {
-        item.answers?.push({ m: answer.content, next: answer.arrowTo });
+        // item.answers?.push({ m: answer.content, next: answer.arrowTo });
+        // const visitedIndex = prevNodeVisited[answer.arrowTo];
+
+        // if (visitedIndex !== index) {
+        item.answers?.push({
+          m: answer.content,
+          next: answer.arrowTo
+          // next: visitedIndex
+        });
+        // } else {
+        //   item.next = index + 1;
+        // }
       });
     } else {
       item.m = currentNode.content;
-      item.next = currentNode.arrowTo[0];
+      item.next = currentNode.arrowTo;
+      // const visitedIndex = prevNodeVisited[currentNode.arrowTo];
+
+      // if (visitedIndex !== index) {
+      //   item.next = visitedIndex;
+      // } else {
+      //   item.next = index + 1;
+      // }
     }
+
     list.push(item);
     index++;
 
     if (currentNode.type === "decision") {
       const decisionQuestion = currentNode.answers;
+
       decisionQuestion?.forEach(answer => {
-        const nextNode = flowNodes.find(node => node.id === answer.arrowTo)!;
-        debugger;
-        if (!idMap[nextNode.id]) {
+        const nextNode = flowNodes.find(node => node.id === answer.arrowTo);
+
+        if (nextNode && !prevNodeVisited[nextNode.id]) {
           queue.push(nextNode);
         }
       });
     } else {
-      const nextNode = flowNodes.find(
-        node => node.id === currentNode.arrowTo[0]
-      )!;
-      debugger;
+      const nextNode = flowNodes.find(node => node.id === currentNode.arrowTo);
+      // throw error if procedure has empty next
+      // user may accidently have unfinished paths
+      // use exit to flag ending
 
-      if (!idMap[nextNode.id]) {
+      if (nextNode && !prevNodeVisited[nextNode.id]) {
         queue.push(nextNode);
       }
     }
   }
+
+  list.forEach(item => {
+    if (item.question) {
+      item.answers?.forEach(
+        item2 =>
+          (item2.next =
+            item2.next !== undefined ? prevNodeVisited[item2.next] : undefined)
+      );
+    } else {
+      item.next =
+        item.next !== undefined ? prevNodeVisited[item.next] : undefined;
+    }
+  });
+
   console.log(list);
   return list;
 };

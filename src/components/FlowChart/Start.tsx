@@ -20,17 +20,6 @@ export default function Start({
   // const [isConnected, setIsConnected] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
-  let direction = "From";
-  const onChangeDirection = () => {
-    // change array data by grabbing id
-  };
-  const onCreateArrow = () => {
-    // setIsConnected(() => true);
-  };
-  const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    console.log(e.keyCode);
-  };
-
   return (
     <Draggable
       {...dragHandlers}
@@ -40,6 +29,10 @@ export default function Start({
         onDrag({ id, isConnected });
       }}
       defaultPosition={{ x: translateX, y: translateY }}
+      // *** corrects position on removed node but messes up zoom*** //
+      position={{ x: translateX, y: translateY }}
+      // *** corrects position on removed node but messes up zoom*** //
+      // scale={flowAreaZoom / 100}
     >
       <div
         id={id}
@@ -57,13 +50,10 @@ export default function Start({
           onBlur={e => onBlur(e, id)}
           contentEditable={true}
           suppressContentEditableWarning={true}
-          onKeyDown={onKeyDown}
         >
           {content}
         </div>
-        <FlowControl
-          {...{ id, direction, onChangeDirection, onCreateArrow }}
-        ></FlowControl>
+        <FlowControl {...{ id, isConnected }}></FlowControl>
       </div>
     </Draggable>
   );

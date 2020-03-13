@@ -3,6 +3,7 @@ import { FlowDraggable } from "../../models/FlowShape";
 import Draggable from "react-draggable";
 import FlowControl from "./FlowControl";
 import FlowContext from "../../context/FlowContext";
+import AntMenu from "../../assets/ant-menu.svg";
 
 export default function Process({
   id,
@@ -11,22 +12,14 @@ export default function Process({
   arrowConnectState,
   position: { top, left, translateX, translateY },
   dragState: { dragHandlers, onStart, onDrag, onStop, handleDragDelta },
-  onBlur
+  onBlur,
+  arrowTo
 }: FlowDraggable) {
   const {
-    flowNodeUIState: { setFlowNodeUI },
-    svgArrowState: { svgArrows, setSvgArrows }
+    flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
   const elementRef = useRef<HTMLDivElement>(null);
   // const [isConnected, setIsConnected] = useState(false);
-
-  let direction = "From";
-  const onChangeDirection = () => {
-    // change array data by grabbing id
-  };
-  const onCreateArrow = () => {
-    // setIsConnected(() => true);
-  };
 
   return (
     <Draggable
@@ -38,6 +31,10 @@ export default function Process({
       }}
       onStop={() => onStop({ id, element: elementRef.current! })}
       defaultPosition={{ x: translateX, y: translateY }}
+      // *** corrects position on removed node but messes up zoom*** //
+      position={{ x: translateX, y: translateY }}
+      // *** corrects position on removed node but messes up zoom*** //
+      // scale={flowAreaZoom / 100}
     >
       <div
         id={id}
@@ -58,9 +55,11 @@ export default function Process({
         >
           {content}
         </div>
-        <FlowControl
-          {...{ id, direction, onChangeDirection, onCreateArrow }}
-        ></FlowControl>
+        <FlowControl {...{ id, arrowTo }}></FlowControl>
+        <style jsx>{`
+          .process {
+          }
+        `}</style>
       </div>
     </Draggable>
   );

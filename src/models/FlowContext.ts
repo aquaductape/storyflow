@@ -1,4 +1,4 @@
-import { FlowJsonData, FlowNodeUI } from "./FlowJsonData";
+import { FlowJsonData, FlowNodeUI } from "./FlowInstructionData";
 import { ISVGArrow } from "./SVGArrow";
 import { AsyncSetState } from "../lib/useAsyncSetState";
 
@@ -14,6 +14,10 @@ export type FlowScrollPosition = {
 };
 
 export interface IFlowContext {
+  flowAreaZoomState: {
+    flowAreaZoom: number;
+    setFlowAreaZoom: React.Dispatch<React.SetStateAction<number>>;
+  };
   flowJsonDataState: {
     flowJsonData: FlowJsonData[];
     setFlowJsonData: React.Dispatch<React.SetStateAction<FlowJsonData[]>>;

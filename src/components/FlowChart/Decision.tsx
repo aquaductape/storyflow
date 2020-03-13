@@ -17,14 +17,7 @@ export default function Decision({
   // const [isConnected, setIsConnected] = useState(false);
   const { dragHandlers, onDrag, onStart, onStop } = dragState;
   const elementRef = useRef<HTMLDivElement>(null);
-  let direction = "From";
   let parentId = id;
-  const onChangeDirection = () => {
-    // change array data by grabbing id
-  };
-  const onCreateArrow = () => {
-    // setIsConnected(() => true);
-  };
 
   return (
     <>
@@ -36,9 +29,14 @@ export default function Decision({
           onDrag({ id, isConnected });
         }}
         defaultPosition={{ x: translateX, y: translateY }}
+        // *** corrects position on removed node but messes up zoom*** //
+        position={{ x: translateX, y: translateY }}
+        // *** corrects position on removed node but messes up zoom*** //
+        // scale={flowAreaZoom / 100}
       >
         <div
           id={id}
+          data-flow-type="decision"
           className="flow-shape flow-decision"
           style={{
             position: "absolute",
@@ -56,27 +54,35 @@ export default function Decision({
           >
             {content}
           </div>
-          <FlowControl
-            {...{ id, direction, onChangeDirection, onCreateArrow }}
-          ></FlowControl>
+          <FlowControl {...{ id }}></FlowControl>
         </div>
       </Draggable>
 
       {answers
-        ? answers.map(({ id, top, left, content, translateX, translateY }) => (
-            <DecisionAnswers
-              arrowConnectState={arrowConnectState}
-              id={id}
-              parentId={parentId}
-              position={{ top, left, translateX, translateY }}
-              content={content}
-              onBlur={onBlur}
-              dragState={dragState}
-              isConnected={isConnected}
-              key={id}
-            ></DecisionAnswers>
-          ))
+        ? answers.map(
+            ({ id, top, left, content, translateX, translateY, arrowTo }) => (
+              <DecisionAnswers
+                arrowConnectState={arrowConnectState}
+                id={id}
+                parentId={parentId}
+                position={{ top, left, translateX, translateY }}
+                content={content}
+                onBlur={onBlur}
+                dragState={dragState}
+                isConnected={isConnected}
+                arrowTo={arrowTo}
+                key={id}
+              ></DecisionAnswers>
+            )
+          )
         : null}
+      <style jsx>
+        {`
+          .flow-decision {
+            background: #f6d7a6;
+          }
+        `}
+      </style>
     </>
   );
 }

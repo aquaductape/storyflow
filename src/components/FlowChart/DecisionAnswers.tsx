@@ -21,11 +21,14 @@ export default function DecisionAnswers({
         onDrag({ id, parentId, isConnected });
       }}
       defaultPosition={{ x: translateX, y: translateY }}
-      key={id}
+      // *** corrects position on removed node but messes up zoom*** //
+      position={{ x: translateX, y: translateY }}
+      // *** corrects position on removed node but messes up zoom*** //
+      // scale={flowAreaZoom / 100}
     >
       <div
         id={id}
-        className="flow-shape flow-decision"
+        className="flow-shape flow-decision flow-decision-question"
         style={{
           position: "absolute",
           top: `${top || 0}px`,
@@ -41,6 +44,13 @@ export default function DecisionAnswers({
         >
           {content}
         </div>
+        <style jsx>
+          {`
+            .flow-decision-question {
+              min-width: 100px;
+            }
+          `}
+        </style>
       </div>
     </Draggable>
   );

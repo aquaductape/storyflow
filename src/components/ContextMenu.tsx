@@ -1,36 +1,40 @@
 import React, { useContext, useState } from "react";
 import FlowContext from "../context/FlowContext";
 import { v4 as uuid } from "uuid";
-import { FlowType, FlowNodeUI } from "../models/FlowJsonData";
+import { FlowType, FlowNodeUI } from "../models/FlowInstructionData";
 import { Menu, Item, MenuProvider } from "react-contexify";
 import { TriggerEvent } from "react-contexify/lib/types";
 
 export default function ContextMenu() {
   const {
     flowNodeUIState: { flowNodeUI, setFlowNodeUI },
-    scrollPositionState: { scrollPosition }
+    scrollPositionState: { scrollPosition },
+    flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
   const hasFlowHasStart = flowNodeUI.length
     ? flowNodeUI[0].type === "start"
     : false;
   const [hasStart, setHasStart] = useState(hasFlowHasStart);
   const addFlowShape = (e: TriggerEvent, type: FlowType) => {
-    const { pageX, pageY } = e;
+    const { pageX, pageY, clientX, clientY } = e;
     console.log({ pageX, pageY });
 
+    const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
+    console.log(pageY, pageY * scale);
     setFlowNodeUI(prev => {
-      const id = uuid();
       const item = {
-        id,
+        id: uuid(),
         isConnected: false,
         content: "",
-        top: pageY + scrollPosition.top,
-        left: pageX + scrollPosition.left,
+        // top: (pageY + scrollPosition.top) * (flowAreaZoom / 100 + 1),
+        // left: (pageX + scrollPosition.left) * (flowAreaZoom / 100 + 1),
+        top: (clientY + scrollPosition.top) * scale,
+        left: (clientX + scrollPosition.left) * scale,
         translateX: 0,
         translateY: 0,
         type,
         arrowFrom: [],
-        arrowTo: []
+        arrowTo: ""
       } as FlowNodeUI;
 
       if (type === "start") {

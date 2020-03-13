@@ -3,7 +3,7 @@ import {
   DraggableData,
   DraggableEvent
 } from "react-draggable";
-import { FlowType } from "./FlowJsonData";
+import { FlowType } from "./FlowInstructionData";
 
 export interface FlowDraggable {
   id: string;
@@ -25,6 +25,7 @@ export interface FlowDraggable {
     arrowTo: string;
     arrowFrom: string[];
   }[];
+  arrowTo: string | undefined;
   arrowConnectState: boolean;
   dragState: {
     dragHandlers: {

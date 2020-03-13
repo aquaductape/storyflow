@@ -1,63 +1,16 @@
-.main-header {
-  height: 50px;
-  width: 100%;
-  padding: 5px;
-  background-image: linear-gradient(90.5deg, #d029c7 1.6%, #b64ce9 98.2%);
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  &-item {
-    color: #fff;
-    font-size: 25px;
-    padding: 5px;
-    // margin-right: 10px;
-    border-right: 1px solid #fff;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
-
 .flow-decision {
   padding: 30px;
-}
-.flow-shape {
-  padding: 30px;
-  border: 2px solid #000;
-  min-width: 150px;
-  background: #fff;
-  overflow: hidden;
-
-  &:hover {
-    cursor: grab;
-  }
 }
 
 .textareaInput {
   min-width: 20px;
   min-height: 20px;
+  white-space: nowrap;
   padding: 5px;
   background: #00000012;
 
   &:hover {
     cursor: text;
-  }
-}
-
-.flow-context-menu {
-  background: #fff;
-  border: 1px solid #000;
-  padding: 10px;
-
-  &-item {
-    margin: 10px 0;
-    &:hover {
-      cursor: pointer;
-    }
   }
 }
 
@@ -82,18 +35,4 @@
   width: 200px;
   height: 100%;
   z-index: 100;
-}
-
-.flow-shape {
-  &.flow-decision {
-    background: #f6d7a6;
-  }
-
-  &.flow-start {
-    background: #b4efbf;
-  }
-
-  &.flow-process {
-    background: #d4defa;
-  }
 }
