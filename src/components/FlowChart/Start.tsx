@@ -8,6 +8,7 @@ export default function Start({
   id,
   isConnected,
   content,
+  arrowTo,
   arrowConnectState,
   position: { top, left, translateX, translateY },
   dragState: { dragHandlers, onStart, onDrag, onStop },
@@ -53,7 +54,7 @@ export default function Start({
         >
           {content}
         </div>
-        <FlowControl {...{ id, isConnected }}></FlowControl>
+        <FlowControl {...{ id, arrowTo, isConnected }}></FlowControl>
       </div>
     </Draggable>
   );

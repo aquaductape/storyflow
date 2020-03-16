@@ -38,7 +38,10 @@ export default function FlowArea() {
     const currentTarget = e.currentTarget as HTMLElement;
 
     if (target.closest(".textareaInput")) return false;
-    if (target.closest(".flow-btn-create-arrow")) {
+    if (
+      target.closest(".flow-btn-create-arrow") ||
+      target.closest(".flow-connecting")
+    ) {
       onCreateArrow({
         currentTarget,
         isFlowConnecting,
@@ -226,7 +229,8 @@ export default function FlowArea() {
           }
           .flow-shape {
             padding: 30px;
-            border: 2px solid #000;
+            // border: 2px solid #000;
+            border-radius: 10px;
             min-width: 225px;
             background: #fff;
           }

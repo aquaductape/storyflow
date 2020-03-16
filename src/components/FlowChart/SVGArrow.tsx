@@ -21,13 +21,14 @@ export default function SVGArrow({
   // const d1 = `M ${x1} ${y1} C ${hx1} ${hy1} ${hx2} ${hy2} ${x2} ${y2}`;
   const d1 = `M ${x1} ${y1} C ${hx1} ${hy1} ${hx2} ${hy2} ${x2} ${y2}`;
 
+  // console.log(scale, " ", svgContainerTop / scale - svgContainerTop);
   return (
     <>
       <path
-        style={{
-          transform: `translateY(-${svgContainerTop / scale -
-            svgContainerTop}px)`
-        }}
+        // style={{
+        //   transform: `translateY(-${svgContainerTop / scale -
+        //     svgContainerTop}px)`
+        // }}
         d={d1}
         fill="none"
         stroke={color}

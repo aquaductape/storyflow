@@ -1,4 +1,5 @@
 import closestPointPretty from "./closestPointPretty";
+import { svgContainerTop } from "./constants";
 
 interface IConnectElements {
   fromId: string;
@@ -20,27 +21,26 @@ export function connectElementsCooridinates({
 
   const result = closestPointPretty({ elFrom, elTo, scale: scale || 1 });
 
-  // const leftPos = left.getBoundingClientRect();
+  // const leftPos = elFrom.getBoundingClientRect();
 
   // let x1 = leftPos.x * (scale ? 1 / scale : 1);
   // let y1 = leftPos.y * (scale ? 1 / scale : 1);
-  // result.x1 *= scale ? 1 / scale : 1;
-  // result.x2 *= scale ? 1 / scale : 1;
-  // result.y1 *= scale ? 1 / scale : 1;
-  // result.y2 *= scale ? 1 / scale : 1;
+  // y1 -= svgContainerTop / (scale || 1) - svgContainerTop;
 
-  // x1 += left.clientWidth;
-  // y1 += left.clientHeight / 2;
+  // x1 += elFrom.clientWidth;
+  // y1 += elFrom.clientHeight / 2;
 
-  // const rightPos = right.getBoundingClientRect();
+  // const rightPos = elTo.getBoundingClientRect();
 
   // let x2 = rightPos.x * (scale ? 1 / scale : 1);
   // let y2 = rightPos.y * (scale ? 1 / scale : 1);
 
-  // y2 += right.clientHeight / 2;
+  // y2 += elTo.clientHeight / 2;
+  // y2 -= svgContainerTop / (scale || 1) - svgContainerTop;
 
   // const width = x2 - x1;
   // const height = y2 - y1;
 
   return { ...result, color, tension };
+  // return { x1, x2, y1, y2, color, tension };
 }

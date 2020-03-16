@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { FlowDraggable, IFlowShape } from "../../models/FlowShape";
 import Decision from "./Decision";
 import Process from "./Process";
 import Start from "./Start";
-import { DraggableData, DraggableEvent } from "react-draggable";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 
 export default function FlowShape({
   type,
@@ -17,10 +17,13 @@ export default function FlowShape({
   position,
   arrowTo
 }: IFlowShape) {
+  const { dragHandlers, onDrag, onStart, onStop } = dragState;
+  const { translateX, translateY } = position;
   const [deltaPosition, setDeltaPosition] = useState({
     x: 200,
     y: 200
   });
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const handleDragDelta = (e: DraggableEvent, ui: DraggableData) => {
     const { x, y } = deltaPosition;
@@ -39,6 +42,7 @@ export default function FlowShape({
         <Decision
           {...{
             id,
+            elementRef,
             content,
             arrowConnectState,
             dragState: { ...dragState, handleDragDelta },

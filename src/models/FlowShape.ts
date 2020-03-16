@@ -7,6 +7,7 @@ import { FlowType } from "./FlowInstructionData";
 
 export interface FlowDraggable {
   id: string;
+  elementRef?: React.RefObject<HTMLDivElement>;
   isConnected: boolean;
   content: string;
   position: {
@@ -25,6 +26,7 @@ export interface FlowDraggable {
     arrowTo: string;
     arrowFrom: string[];
   }[];
+
   arrowTo: string | undefined;
   arrowConnectState: boolean;
   dragState: {
