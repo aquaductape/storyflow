@@ -35,12 +35,12 @@ export default function Header() {
   return (
     <header className="main-header">
       <div className="toolbar">
-        <div className="toolbar-item" onClick={() => onZoom("minus")}>
+        {/* <div className="toolbar-item" onClick={() => onZoom("minus")}>
           <FontAwesomeIcon icon={faSearchMinus}></FontAwesomeIcon>
         </div>
         <div className="toolbar-item" onClick={() => onZoom("plus")}>
           <FontAwesomeIcon icon={faSearchPlus}></FontAwesomeIcon>
-        </div>
+        </div> */}
         <div className="toolbar-item" onClick={onSave}>
           Save
         </div>

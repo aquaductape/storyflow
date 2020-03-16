@@ -1,8 +1,7 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import FlowContext from "../../context/FlowContext";
 import SVGArrow from "./SVGArrow";
-import { ISVGArrow } from "../../models/SVGArrow";
-import lsStorage from "../../lib/lsStorage";
+import { svgContainerTop } from "../../lib/constants";
 
 export default function SVGArrowContainer() {
   const {
@@ -10,7 +9,7 @@ export default function SVGArrowContainer() {
   } = useContext(FlowContext)!;
   const style = {
     position: "absolute",
-    top: "-50px",
+    top: `-${svgContainerTop}px`,
     left: "0"
   } as React.CSSProperties;
 
@@ -21,8 +20,25 @@ export default function SVGArrowContainer() {
       height={3000}
       style={style}
     >
-      {svgArrows.map(({ x1, x2, y1, y2, color, tension }, idx) => (
-        <SVGArrow {...{ x1, x2, y1, y2, color, tension }} key={idx}></SVGArrow>
+      <defs>
+        <marker
+          id="triangle"
+          viewBox="0 0 10 10"
+          refX="0"
+          refY="5"
+          markerUnits="strokeWidth"
+          markerWidth="10"
+          markerHeight="8"
+          orient="auto"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z"></path>
+        </marker>
+      </defs>
+      {svgArrows.map(({ x1, x2, y1, y2, color, tension, scale }, idx) => (
+        <SVGArrow
+          {...{ x1, x2, y1, y2, color, tension, scale }}
+          key={idx}
+        ></SVGArrow>
       ))}
     </svg>
   );

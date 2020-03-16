@@ -14,6 +14,7 @@ import {
   removeAllArrows,
   removeArrow
 } from "../../lib/removeShape";
+import closestPointPretty from "../../lib/closestPointPretty";
 
 export default function FlowArea() {
   const {
@@ -110,7 +111,8 @@ export default function FlowArea() {
     setSvgArrows(prev => {
       for (let i = 0; i < prev.length; i++) {
         const item = prev[i];
-        const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
+        const scale = flowAreaZoom / 100;
+        const startingTop = 50;
         if (item.fromId === id || item.toId === id) {
           const { fromId, toId } = item;
           const updatedCooridinates = connectElementsCooridinates({
@@ -120,12 +122,20 @@ export default function FlowArea() {
             tension: 0,
             scale
           });
-          updatedCooridinates.x1 += scrollPosition.left;
-          updatedCooridinates.x2 += scrollPosition.left;
-          updatedCooridinates.y1 += scrollPosition.top;
-          updatedCooridinates.y2 += scrollPosition.top;
 
-          prev[i] = { ...updatedCooridinates, fromId, toId };
+          updatedCooridinates.x1 += scrollPosition.left * (1 / scale);
+          updatedCooridinates.x2 += scrollPosition.left * (1 / scale);
+          updatedCooridinates.y1 += scrollPosition.top * (1 / scale);
+          updatedCooridinates.y2 += scrollPosition.top * (1 / scale);
+
+          // updatedCooridinates.y1 += startingTop / (startingTop * (1 / scale));
+          // updatedCooridinates.y2 += startingTop / (startingTop * (1 / scale));
+          // updatedCooridinates.y1 -=
+          //   startingTop - startingTop / (startingTop * (1 / scale));
+          // updatedCooridinates.y2 -=
+          //   startingTop - startingTop / (startingTop * (1 / scale));
+
+          prev[i] = { ...updatedCooridinates, fromId, toId, scale };
         }
       }
       return [...prev];

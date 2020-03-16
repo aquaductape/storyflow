@@ -5,6 +5,7 @@ export interface ISVGArrow {
   y2: number;
   fromId: string;
   toId: string;
+  scale: number;
   color?: string;
   tension?: number;
 }

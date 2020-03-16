@@ -60,7 +60,7 @@ export function removeAllArrows({
     } else {
       newPrev = prev.filter(item => {
         if (
-          item.fromId === currentTarget.id &&
+          item.fromId === currentTarget.id ||
           item.toId === currentTarget.id
         ) {
           return false;
@@ -68,7 +68,7 @@ export function removeAllArrows({
         return true;
       });
     }
-    console.log(prev, newPrev);
+    console.log(currentTarget, prev, newPrev);
     return [...newPrev];
   });
 }

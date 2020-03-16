@@ -101,7 +101,9 @@ export const onCreateArrow = async ({
     elementsCooridinates.y1 += scrollPosition.top;
     elementsCooridinates.y2 += scrollPosition.top;
 
-    const result = [{ ...elementsCooridinates, fromId, toId: answerId }];
+    const result = [
+      { ...elementsCooridinates, fromId, toId: answerId, scale: 1 }
+    ];
     // question to target
     elementsCooridinates = connectElementsCooridinates({
       toId: currentTarget.id,
@@ -118,7 +120,8 @@ export const onCreateArrow = async ({
     result.push({
       ...elementsCooridinates,
       fromId: answerId,
-      toId: currentTarget.id
+      toId: currentTarget.id,
+      scale: 1
     });
 
     setSvgArrows(prev => [...prev, ...result]);
@@ -140,7 +143,7 @@ export const onCreateArrow = async ({
     setSvgArrows(prev => [
       ...prev,
       // { ...elementsCooridinates, fromId, toId: currentTarget.id }
-      { ...elementsCooridinates, fromId, toId: currentTarget.id }
+      { ...elementsCooridinates, fromId, toId: currentTarget.id, scale: 1 }
     ]);
   }
 

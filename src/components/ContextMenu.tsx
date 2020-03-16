@@ -26,8 +26,6 @@ export default function ContextMenu() {
         id: uuid(),
         isConnected: false,
         content: "",
-        // top: (pageY + scrollPosition.top) * (flowAreaZoom / 100 + 1),
-        // left: (pageX + scrollPosition.left) * (flowAreaZoom / 100 + 1),
         top: (clientY + scrollPosition.top) * scale,
         left: (clientX + scrollPosition.left) * scale,
         translateX: 0,
