@@ -1,5 +1,5 @@
-import closestPointPretty from "./closestPointPretty";
-import { svgContainerTop } from "./constants";
+import { closestPointElement } from "./closestPoint";
+import { flowChartContainerTop } from "./constants";
 
 interface IConnectElements {
   fromId: string;
@@ -19,7 +19,7 @@ export function connectElementsCooridinates({
   const elFrom = document.getElementById(fromId)!;
   const elTo = document.getElementById(toId)!;
 
-  const result = closestPointPretty({ elFrom, elTo, scale: scale || 1 });
+  const result = closestPointElement({ elFrom, elTo, scale: scale || 1 });
 
   // const leftPos = elFrom.getBoundingClientRect();
 

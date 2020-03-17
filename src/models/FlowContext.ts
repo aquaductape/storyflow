@@ -1,5 +1,5 @@
 import { FlowJsonData, FlowNodeUI } from "./FlowInstructionData";
-import { ISVGArrow } from "./SVGArrow";
+import { ISVGArrow, IGhostArrow } from "./SVGArrow";
 import { AsyncSetState } from "../lib/useAsyncSetState";
 
 export type FlowConnecting = {
@@ -33,6 +33,10 @@ export interface IFlowContext {
   svgArrowState: {
     svgArrows: ISVGArrow[];
     setSvgArrows: React.Dispatch<React.SetStateAction<ISVGArrow[]>>;
+  };
+  ghostArrowState: {
+    ghostArrow: IGhostArrow | null;
+    setGhostArrow: React.Dispatch<React.SetStateAction<IGhostArrow | null>>;
   };
   scrollPositionState: {
     scrollPosition: FlowScrollPosition;

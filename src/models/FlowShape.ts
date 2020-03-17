@@ -7,6 +7,7 @@ import { FlowType } from "./FlowInstructionData";
 
 export interface FlowDraggable {
   id: string;
+  type: "start" | "decision" | "process" | "exit";
   elementRef?: React.RefObject<HTMLDivElement>;
   isConnected: boolean;
   content: string;

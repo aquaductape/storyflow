@@ -17,10 +17,8 @@ export default function ContextMenu() {
   const [hasStart, setHasStart] = useState(hasFlowHasStart);
   const addFlowShape = (e: TriggerEvent, type: FlowType) => {
     const { pageX, pageY, clientX, clientY } = e;
-    console.log({ pageX, pageY });
 
     const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
-    console.log(pageY, pageY * scale);
     setFlowNodeUI(prev => {
       const item = {
         id: uuid(),

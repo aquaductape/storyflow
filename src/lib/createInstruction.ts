@@ -22,8 +22,6 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
 
     if (prevNodeVisited[currentNode.id]) {
       continue;
-      // console.log(list);
-      // return list;
     } else {
       prevNodeVisited[currentNode.id] = index;
     }
@@ -96,6 +94,5 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
     }
   });
 
-  console.log(list);
   return list;
 };

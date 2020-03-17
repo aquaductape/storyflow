@@ -8,4 +8,14 @@ export interface ISVGArrow {
   scale: number;
   color?: string;
   tension?: number;
+  strokeDashArray?: string;
+}
+
+export interface IGhostArrow {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  scale: number;
+  strokeDashArray?: string;
 }

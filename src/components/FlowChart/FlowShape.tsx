@@ -27,7 +27,6 @@ export default function FlowShape({
 
   const handleDragDelta = (e: DraggableEvent, ui: DraggableData) => {
     const { x, y } = deltaPosition;
-    console.log(x, y);
     setDeltaPosition(prev => {
       prev.x = x + ui.deltaX;
       prev.y = y + ui.deltaY;
@@ -42,6 +41,7 @@ export default function FlowShape({
         <Decision
           {...{
             id,
+            type,
             elementRef,
             content,
             arrowConnectState,
@@ -59,6 +59,7 @@ export default function FlowShape({
         <Process
           {...{
             id,
+            type,
             arrowConnectState,
             content,
             dragState: { ...dragState, handleDragDelta },
@@ -74,6 +75,7 @@ export default function FlowShape({
         <Start
           {...{
             id,
+            type,
             arrowConnectState,
             content,
             dragState: { ...dragState, handleDragDelta },

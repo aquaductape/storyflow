@@ -1,27 +1,75 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import FlowContext from "../../context/FlowContext";
 import { ReactComponent as IconMenu } from "../../assets/ant-menu.svg";
 import { ReactComponent as IconClose } from "../../assets/close.svg";
 import { ReactComponent as IconLinkNode } from "../../assets/link-node.svg";
 import { ReactComponent as IconLinkNodeRemove } from "../../assets/link-node-remove.svg";
+import removeListenersEscapeHatch from "../../lib/removeListenerEscapeHatch";
+import { closestPointCoor } from "../../lib/closestPoint";
 
 type IFlowControl = {
   id: string;
+  type: string;
   arrowTo?: string | undefined;
-  // direction: string;
 };
-export default function FlowControl({ id, arrowTo }: IFlowControl) {
+
+const refScrollPosition = { left: 0, top: 0 };
+export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const {
-    flowConnectState: { isFlowConnecting, setFlowConnecting }
+    flowConnectState: { isFlowConnecting, setFlowConnecting },
+    ghostArrowState: { setGhostArrow },
+    scrollPositionState: { scrollPosition },
+    flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
   let btnCreateArrowContent = isFlowConnecting.connecting
     ? "Connect"
     : "Create Arrow";
   let btnConnect = isFlowConnecting.fromId === id ? "Cancel" : "Connect";
+  useEffect(() => {
+    refScrollPosition.left = scrollPosition.left;
+    refScrollPosition.top = scrollPosition.top;
+  }, [scrollPosition.left, scrollPosition.top]);
+
+  const onGhostArrow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const idEl = document.getElementById(id)!;
+    const scale = flowAreaZoom / 100;
+
+    const ghostArrow = (e: MouseEvent) => {
+      const x = e.clientX;
+      const y = e.clientY;
+
+      const result = closestPointCoor({
+        elFrom: idEl,
+        toCoor: { x, y },
+        scale
+      });
+
+      result.x1 += refScrollPosition.left * (1 / scale);
+      result.x2 += refScrollPosition.left * (1 / scale);
+      result.y1 += refScrollPosition.top * (1 / scale);
+      result.y2 += refScrollPosition.top * (1 / scale);
+      setGhostArrow(() => ({ ...result, scale: 1, strokeDashArray: "12px" }));
+    };
+    const flowChartContainer = document.querySelector(
+      ".flow-area-inner"
+    )! as HTMLElement;
+    flowChartContainer.addEventListener("mousemove", ghostArrow);
+
+    removeListenersEscapeHatch(() => {
+      setGhostArrow(() => null);
+      flowChartContainer.removeEventListener("mousemove", ghostArrow);
+      setFlowConnecting(() => ({ fromId: "", toId: "", connecting: false }));
+    });
+  };
 
   return (
     <div className="main">
-      {isFlowConnecting.connecting && isFlowConnecting.fromId !== id ? (
+      {isFlowConnecting.connecting &&
+      isFlowConnecting.fromId !== id &&
+      type !== "start" ? (
         <div className="connecting flow-connecting"></div>
       ) : null}
       <div className="flow-control">
@@ -38,7 +86,10 @@ export default function FlowControl({ id, arrowTo }: IFlowControl) {
             <IconMenu></IconMenu>
           </div>
           {!arrowTo ? (
-            <div className="link-node flow-btn-create-arrow">
+            <div
+              className="link-node flow-btn-create-arrow"
+              onClick={onGhostArrow}
+            >
               <IconLinkNode></IconLinkNode>
             </div>
           ) : (
@@ -61,6 +112,7 @@ export default function FlowControl({ id, arrowTo }: IFlowControl) {
             right: -10px;
             border: 5px solid #0072ff;
             border-radius: 10px;
+            cursor: pointer;
             z-index: 10;
           }
           .connecting:hover {

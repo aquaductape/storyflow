@@ -7,6 +7,7 @@ import AntMenu from "../../assets/ant-menu.svg";
 
 export default function Process({
   id,
+  type,
   isConnected,
   content,
   arrowConnectState,
@@ -55,7 +56,7 @@ export default function Process({
         >
           {content}
         </div>
-        <FlowControl {...{ id, arrowTo }}></FlowControl>
+        <FlowControl {...{ id, arrowTo, type }}></FlowControl>
         <style jsx>{`
           .process {
           }

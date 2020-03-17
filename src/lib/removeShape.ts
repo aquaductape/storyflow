@@ -29,7 +29,6 @@ export function removeNode({
 
       return true;
     });
-    console.log(prev, newPrev);
     return [...newPrev];
   });
 }
@@ -67,7 +66,6 @@ export function removeAllArrows({
         return true;
       });
     }
-    console.log(currentTarget, prev, newPrev);
     return [...newPrev];
   });
 }
@@ -94,7 +92,6 @@ export function removeArrow({
       }
       return true;
     });
-    console.log(prev, newPrev);
     return [...newPrev];
   });
 }

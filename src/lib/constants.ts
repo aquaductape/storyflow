@@ -1,1 +1,1 @@
-export const svgContainerTop = 50;
+export const flowChartContainerTop = 50;

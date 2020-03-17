@@ -6,6 +6,7 @@ import FlowContext from "../../context/FlowContext";
 
 export default function Start({
   id,
+  type,
   isConnected,
   content,
   arrowTo,
@@ -54,7 +55,7 @@ export default function Start({
         >
           {content}
         </div>
-        <FlowControl {...{ id, arrowTo, isConnected }}></FlowControl>
+        <FlowControl {...{ id, arrowTo, type }}></FlowControl>
       </div>
     </Draggable>
   );

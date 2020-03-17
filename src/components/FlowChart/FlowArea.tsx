@@ -1,20 +1,18 @@
 import React, { useState, useContext, useEffect } from "react";
-import Draggable, { DraggableEvent } from "react-draggable";
+import { DraggableEvent } from "react-draggable";
 
 import FlowContext from "../../context/FlowContext";
 import FlowShape from "./FlowShape";
 import { connectElementsCooridinates } from "../../lib/connectElementsCooridinates";
-import SVGArrowContainer from "./SVGArrowContainer";
-import { FlowNodeUI } from "../../models/FlowInstructionData";
+import LinkNodeContainer from "./LinkNodeContainer";
 import { onCreateArrow } from "../../lib/createArrow";
 import { convertToText } from "../../lib/contentEditable";
-import lsStorage from "../../lib/lsStorage";
 import {
   removeNode,
   removeAllArrows,
   removeArrow
 } from "../../lib/removeShape";
-import closestPointPretty from "../../lib/closestPointPretty";
+import GhostNodeContainer from "./GhostNodeContainer";
 
 export default function FlowArea() {
   const {
@@ -53,14 +51,12 @@ export default function FlowArea() {
       return false;
     }
     if (target.closest(".flow-btn-remove-node")) {
-      console.log("remove node");
       removeNode({ currentTarget, setFlowNodeUI });
       removeAllArrows({ currentTarget, setSvgArrows });
       return false;
     }
     // *** better to pass these as functions, instead of searching through whole list by element by id ** //
     if (target.closest(".flow-btn-remove-arrow")) {
-      console.log("remove arrow");
       removeArrow({ currentTarget, setSvgArrows, setFlowNodeUI });
       return false;
     }
@@ -78,7 +74,6 @@ export default function FlowArea() {
     parentId?: string;
   }) => {
     const matchTransform = element.style.transform.match(/-?\d+/g);
-    console.log("stop");
 
     if (!matchTransform) return;
 
@@ -115,7 +110,7 @@ export default function FlowArea() {
       for (let i = 0; i < prev.length; i++) {
         const item = prev[i];
         const scale = flowAreaZoom / 100;
-        const startingTop = 50;
+
         if (item.fromId === id || item.toId === id) {
           const { fromId, toId } = item;
           const updatedCooridinates = connectElementsCooridinates({
@@ -131,13 +126,6 @@ export default function FlowArea() {
           updatedCooridinates.y1 += scrollPosition.top * (1 / scale);
           updatedCooridinates.y2 += scrollPosition.top * (1 / scale);
 
-          // updatedCooridinates.y1 += startingTop / (startingTop * (1 / scale));
-          // updatedCooridinates.y2 += startingTop / (startingTop * (1 / scale));
-          // updatedCooridinates.y1 -=
-          //   startingTop - startingTop / (startingTop * (1 / scale));
-          // updatedCooridinates.y2 -=
-          //   startingTop - startingTop / (startingTop * (1 / scale));
-
           prev[i] = { ...updatedCooridinates, fromId, toId, scale };
         }
       }
@@ -146,7 +134,6 @@ export default function FlowArea() {
   };
 
   const onChangeDirection = (currentTarget: HTMLElement): false => {
-    console.log("change direction");
     return false;
   };
 
@@ -169,10 +156,8 @@ export default function FlowArea() {
     setFlowNodeUI(prev => {
       if (parentId) {
         const parent = prev.find(item => item.id === parentId)!;
-        console.log(parent);
         const item = parent.answers!.find(item => item.id === id)!;
         item.content = content;
-        console.log(prev);
         return [...prev];
       }
 
@@ -186,7 +171,8 @@ export default function FlowArea() {
   return (
     <div className="flow-area-outer" onScroll={onScroll}>
       <div className="flow-area-inner">
-        <SVGArrowContainer></SVGArrowContainer>
+        <LinkNodeContainer></LinkNodeContainer>
+        <GhostNodeContainer></GhostNodeContainer>
         {flowNodeUI.map(
           (
             {

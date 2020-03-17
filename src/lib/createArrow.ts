@@ -21,12 +21,6 @@ export const onCreateArrow = async ({
 }) => {
   let fromId = "";
   let answerId = "";
-  console.log(
-    "fromId ",
-    isFlowConnecting.fromId,
-    " toId ",
-    isFlowConnecting.toId
-  );
 
   if (
     isFlowConnecting.fromId === currentTarget.id &&
@@ -126,7 +120,6 @@ export const onCreateArrow = async ({
 
     setSvgArrows(prev => [...prev, ...result]);
   } else {
-    console.log(fromId, currentTarget.id);
     const elementsCooridinates = connectElementsCooridinates({
       // fromId: currentTarget.id,
       // toId: fromId,

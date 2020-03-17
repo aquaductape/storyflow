@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FlowJsonData, FlowNodeUI } from "../models/FlowInstructionData";
 import FlowContext from "./FlowContext";
-import { ISVGArrow } from "../models/SVGArrow";
+import { ISVGArrow, IGhostArrow } from "../models/SVGArrow";
 import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
 import { useAsyncSetState } from "../lib/useAsyncSetState";
 import lsStorage from "../lib/lsStorage";
@@ -9,6 +9,7 @@ import lsStorage from "../lib/lsStorage";
 const FlowProvider = (props: React.Props<any>) => {
   const [flowJsonData, setFlowJsonData] = useState<FlowJsonData[]>([]);
   const [flowAreaZoom, setFlowAreaZoom] = useState(100);
+  const [ghostArrow, setGhostArrow] = useState<IGhostArrow | null>(null);
   const [flowNodeUI, setFlowNodeUI] = useAsyncSetState<FlowNodeUI[]>(
     lsStorage.getUINodes() || []
   );
@@ -30,6 +31,10 @@ const FlowProvider = (props: React.Props<any>) => {
   return (
     <FlowContext.Provider
       value={{
+        ghostArrowState: {
+          ghostArrow,
+          setGhostArrow
+        },
         flowAreaZoomState: { flowAreaZoom, setFlowAreaZoom },
         flowConnectState: {
           isFlowConnecting,

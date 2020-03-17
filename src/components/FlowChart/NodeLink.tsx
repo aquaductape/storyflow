@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import { ISVGArrow } from "../../models/SVGArrow";
-import { svgContainerTop } from "../../lib/constants";
+import { flowChartContainerTop } from "../../lib/constants";
 
-export default function SVGArrow({
+export default function NodeLink({
   x1,
   y1,
   x2,
   y2,
   color,
   scale,
+  strokeDashArray,
   tension
 }: Omit<ISVGArrow, "fromId" | "toId">) {
   const delta = (x2 - x1) * (tension || 0);
@@ -21,7 +22,6 @@ export default function SVGArrow({
   // const d1 = `M ${x1} ${y1} C ${hx1} ${hy1} ${hx2} ${hy2} ${x2} ${y2}`;
   const d1 = `M ${x1} ${y1} C ${hx1} ${hy1} ${hx2} ${hy2} ${x2} ${y2}`;
 
-  // console.log(scale, " ", svgContainerTop / scale - svgContainerTop);
   return (
     <>
       <path
@@ -30,9 +30,11 @@ export default function SVGArrow({
         //     svgContainerTop}px)`
         // }}
         d={d1}
+        strokeLinecap="round"
         fill="none"
-        stroke={color}
+        stroke={"#636363"}
         strokeWidth="2px"
+        strokeDasharray={strokeDashArray}
         markerEnd="url(#triangle)"
       />
     </>

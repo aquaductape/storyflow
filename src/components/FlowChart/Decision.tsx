@@ -6,6 +6,7 @@ import DecisionAnswers from "./DecisionAnswers";
 
 export default function Decision({
   id,
+  type,
   isConnected,
   content,
   arrowConnectState,
@@ -54,7 +55,7 @@ export default function Decision({
           >
             {content}
           </div>
-          <FlowControl {...{ id }}></FlowControl>
+          <FlowControl {...{ id, type }}></FlowControl>
         </div>
       </Draggable>
 
@@ -64,6 +65,7 @@ export default function Decision({
               <DecisionAnswers
                 arrowConnectState={arrowConnectState}
                 id={id}
+                type={type}
                 parentId={parentId}
                 position={{ top, left, translateX, translateY }}
                 content={content}
