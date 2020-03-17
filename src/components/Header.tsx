@@ -9,7 +9,7 @@ import downloadObjectAsJson from "../lib/downloadObjectAsJSON";
 export default function Header() {
   const {
     flowNodeUIState: { flowNodeUI },
-    svgArrowState: { svgArrows },
+    linkNodeState: { linkNode },
     flowAreaZoomState: { setFlowAreaZoom }
   } = useContext(FlowContext)!;
   const [displayRunner, setDisplayRunner] = useState(false);
@@ -19,7 +19,7 @@ export default function Header() {
   };
   const onSave = () => {
     const uiNodesStr = JSON.stringify(flowNodeUI);
-    const svgArrowsStr = JSON.stringify(svgArrows);
+    const svgArrowsStr = JSON.stringify(linkNode);
     localStorage.setItem("UINodes", uiNodesStr);
     localStorage.setItem("SVGArrows", svgArrowsStr);
   };

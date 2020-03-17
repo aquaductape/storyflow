@@ -18,7 +18,7 @@ export default function FlowArea() {
   const {
     flowNodeUIState: { flowNodeUI, setFlowNodeUI },
     flowConnectState: { isFlowConnecting, setFlowConnecting },
-    svgArrowState: { setSvgArrows },
+    linkNodeState: { setLinkNode },
     scrollPositionState: { scrollPosition, setScrollPosition },
     flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
@@ -45,19 +45,19 @@ export default function FlowArea() {
         isFlowConnecting,
         setFlowConnecting,
         setFlowNodeUI,
-        setSvgArrows,
+        setSvgArrows: setLinkNode,
         scrollPosition
       });
       return false;
     }
     if (target.closest(".flow-btn-remove-node")) {
       removeNode({ currentTarget, setFlowNodeUI });
-      removeAllArrows({ currentTarget, setSvgArrows });
+      removeAllArrows({ currentTarget, setSvgArrows: setLinkNode });
       return false;
     }
     // *** better to pass these as functions, instead of searching through whole list by element by id ** //
     if (target.closest(".flow-btn-remove-arrow")) {
-      removeArrow({ currentTarget, setSvgArrows, setFlowNodeUI });
+      removeArrow({ currentTarget, setSvgArrows: setLinkNode, setFlowNodeUI });
       return false;
     }
     if (target.closest(".flow-btn-change-direction"))
@@ -106,7 +106,7 @@ export default function FlowArea() {
   }) => {
     if (!isConnected) return;
 
-    setSvgArrows(prev => {
+    setLinkNode(prev => {
       for (let i = 0; i < prev.length; i++) {
         const item = prev[i];
         const scale = flowAreaZoom / 100;
@@ -220,11 +220,20 @@ export default function FlowArea() {
             min-width: 225px;
             background: #fff;
           }
+
+          .flow-shape .textareaInput {
+            margin-top: 10px;
+            min-width: 20px;
+            min-height: 20px;
+            white-space: nowrap;
+            padding: 5px;
+            background: #00000012;
+          }
+          .flow-shape .textareaInput:hover {
+            cursor: text;
+          }
           .flow-shape:hover {
             cursor: grab;
-          }
-          .flow-shape.flow-decision {
-            background: #f6d7a6;
           }
 
           .flow-shape.flow-start {

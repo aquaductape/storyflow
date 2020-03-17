@@ -1,5 +1,5 @@
 import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ISVGArrow } from "../models/SVGArrow";
+import { ILinkNode } from "../models/LinkNode";
 
 export function removeNode({
   currentTarget,
@@ -38,7 +38,7 @@ export function removeAllArrows({
   setSvgArrows
 }: {
   currentTarget: HTMLElement;
-  setSvgArrows: React.Dispatch<React.SetStateAction<ISVGArrow[]>>;
+  setSvgArrows: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
 }) {
   setSvgArrows(prev => {
     const decisionSiblingArrow = <{ [key: string]: boolean | undefined }>{};
@@ -77,7 +77,7 @@ export function removeArrow({
 }: {
   currentTarget: HTMLElement;
   setFlowNodeUI: React.Dispatch<React.SetStateAction<FlowNodeUI[]>>;
-  setSvgArrows: React.Dispatch<React.SetStateAction<ISVGArrow[]>>;
+  setSvgArrows: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
 }) {
   setSvgArrows(prev => {
     const newPrev = prev.filter(item => {

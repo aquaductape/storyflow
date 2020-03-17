@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import Draggable from "react-draggable";
 import { IDecisionAnswers } from "../../models/FlowShape";
+import FlowControl from "./FlowControl";
 export default function DecisionAnswers({
   arrowConnectState,
   content,
@@ -12,6 +13,7 @@ export default function DecisionAnswers({
   position: { left, top, translateX, translateY }
 }: IDecisionAnswers) {
   const elementRef = useRef<HTMLDivElement>(null);
+  const type = "answer";
   return (
     <Draggable
       {...dragHandlers}
@@ -44,10 +46,12 @@ export default function DecisionAnswers({
         >
           {content}
         </div>
+        <FlowControl {...{ id, type }}></FlowControl>
         <style jsx>
           {`
             .flow-decision-question {
               min-width: 100px;
+              background: #f6d7a6;
             }
           `}
         </style>

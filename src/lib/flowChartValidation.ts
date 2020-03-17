@@ -1,9 +1,9 @@
 import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ISVGArrow } from "../models/SVGArrow";
+import { ILinkNode } from "../models/LinkNode";
 
 interface IFlowChartValidation {
   flowNodeUI: FlowNodeUI[];
-  svgArrows: ISVGArrow[];
+  svgArrows: ILinkNode[];
 }
 interface IfindInfiniteProcedure {
   flowNodeUI: FlowNodeUI[];

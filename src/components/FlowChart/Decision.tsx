@@ -46,7 +46,6 @@ export default function Decision({
           }}
           ref={elementRef}
         >
-          Decision
           <div
             className="textareaInput flow-decision-content"
             onBlur={e => onBlur(e, id)}
@@ -60,28 +59,28 @@ export default function Decision({
       </Draggable>
 
       {answers
-        ? answers.map(
-            ({ id, top, left, content, translateX, translateY, arrowTo }) => (
-              <DecisionAnswers
-                arrowConnectState={arrowConnectState}
-                id={id}
-                type={type}
-                parentId={parentId}
-                position={{ top, left, translateX, translateY }}
-                content={content}
-                onBlur={onBlur}
-                dragState={dragState}
-                isConnected={isConnected}
-                arrowTo={arrowTo}
-                key={id}
-              ></DecisionAnswers>
-            )
-          )
+        ? answers.map(({ id, // type,
+            top, left, content, translateX, translateY, arrowTo }) => (
+            <DecisionAnswers
+              arrowConnectState={arrowConnectState}
+              id={id}
+              type={type}
+              parentId={parentId}
+              position={{ top, left, translateX, translateY }}
+              content={content}
+              onBlur={onBlur}
+              dragState={dragState}
+              isConnected={isConnected}
+              arrowTo={arrowTo}
+              key={id}
+            ></DecisionAnswers>
+          ))
         : null}
       <style jsx>
         {`
           .flow-decision {
             background: #f6d7a6;
+            background: #f5c57a;
           }
         `}
       </style>

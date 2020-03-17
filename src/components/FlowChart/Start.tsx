@@ -1,8 +1,7 @@
-import React, { useContext, useState, useRef } from "react";
+import React, { useRef } from "react";
 import { FlowDraggable } from "../../models/FlowShape";
 import Draggable from "react-draggable";
 import FlowControl from "./FlowControl";
-import FlowContext from "../../context/FlowContext";
 
 export default function Start({
   id,
@@ -15,11 +14,6 @@ export default function Start({
   dragState: { dragHandlers, onStart, onDrag, onStop },
   onBlur
 }: FlowDraggable) {
-  const {
-    flowNodeUIState: { setFlowNodeUI },
-    svgArrowState: { svgArrows, setSvgArrows }
-  } = useContext(FlowContext)!;
-  // const [isConnected, setIsConnected] = useState(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -46,7 +40,6 @@ export default function Start({
         }}
         ref={elementRef}
       >
-        Start
         <div
           className="textareaInput flow-decision-content"
           onBlur={e => onBlur(e, id)}

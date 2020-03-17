@@ -6,6 +6,7 @@ import ContextMenu from "./components/ContextMenu";
 import { MenuProvider } from "react-contexify";
 import Header from "./components/Header";
 import Modal from "./components/Modal";
+import SideBar from "./components/SideBar/SideBar";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <div className="App">
         <FlowProvider>
           <Header></Header>
+          <SideBar></SideBar>
           {/* <Modal modalColor={"error"}></Modal> */}
           <MenuProvider id="flow-context-menu-root" className="menu-provider">
             <FlowArea></FlowArea>

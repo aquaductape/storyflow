@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FlowContext from "../../context/FlowContext";
 import { ReactComponent as IconMenu } from "../../assets/ant-menu.svg";
 import { ReactComponent as IconClose } from "../../assets/close.svg";
 import { ReactComponent as IconLinkNode } from "../../assets/link-node.svg";
 import { ReactComponent as IconLinkNodeRemove } from "../../assets/link-node-remove.svg";
-import removeListenersEscapeHatch from "../../lib/removeListenerEscapeHatch";
+import addEscapeHatch from "../../lib/removeListenerEscapeHatch";
 import { closestPointCoor } from "../../lib/closestPoint";
 
 type IFlowControl = {
@@ -14,13 +14,15 @@ type IFlowControl = {
 };
 
 const refScrollPosition = { left: 0, top: 0 };
+let escapeHatchListener: any;
 export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const {
     flowConnectState: { isFlowConnecting, setFlowConnecting },
-    ghostArrowState: { setGhostArrow },
+    ghostArrowState: { ghostArrow, setGhostArrow },
     scrollPositionState: { scrollPosition },
     flowAreaZoomState: { flowAreaZoom }
   } = useContext(FlowContext)!;
+  const [linkNodeToggle, setLinkNodeToggle] = useState(false);
   let btnCreateArrowContent = isFlowConnecting.connecting
     ? "Connect"
     : "Create Arrow";
@@ -33,13 +35,23 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const onGhostArrow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
+    const flowChartContainer = document.querySelector(
+      ".flow-area-inner"
+    )! as HTMLElement;
     const idEl = document.getElementById(id)!;
     const scale = flowAreaZoom / 100;
 
-    const ghostArrow = (e: MouseEvent) => {
+    if (linkNodeToggle) {
+      if (escapeHatchListener) {
+        escapeHatchListener.remove();
+      }
+      return;
+    }
+
+    const trackGhostArrow = (e: MouseEvent) => {
       const x = e.clientX;
       const y = e.clientY;
+      // console.log({ x, y });
 
       const result = closestPointCoor({
         elFrom: idEl,
@@ -53,16 +65,24 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
       result.y2 += refScrollPosition.top * (1 / scale);
       setGhostArrow(() => ({ ...result, scale: 1, strokeDashArray: "12px" }));
     };
-    const flowChartContainer = document.querySelector(
-      ".flow-area-inner"
-    )! as HTMLElement;
-    flowChartContainer.addEventListener("mousemove", ghostArrow);
 
-    removeListenersEscapeHatch(() => {
+    console.log("add");
+    flowChartContainer.addEventListener("mousemove", trackGhostArrow);
+
+    escapeHatchListener = addEscapeHatch(() => {
+      console.log("delete");
       setGhostArrow(() => null);
-      flowChartContainer.removeEventListener("mousemove", ghostArrow);
+      flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
       setFlowConnecting(() => ({ fromId: "", toId: "", connecting: false }));
+      setLinkNodeToggle(() => false);
     });
+    setLinkNodeToggle(() => true);
+  };
+
+  const onRemoveNode = () => {
+    if (escapeHatchListener) {
+      escapeHatchListener.remove();
+    }
   };
 
   return (
@@ -73,14 +93,6 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
         <div className="connecting flow-connecting"></div>
       ) : null}
       <div className="flow-control">
-        {/* {!arrowTo && !isFlowConnecting.connecting ? (
-          <button className="btn flow-btn-create-arrow">+ Link</button>
-        ) : null}
-        {isFlowConnecting.connecting ? (
-          <button className="btn flow-btn-create-arrow">{btnConnect}</button>
-        ) : null}
-        <button className="btn flow-btn-remove-node">Remove Node</button>
-        <button className="btn flow-btn-remove-arrow">Remove Arrow</button> */}
         <div className="options">
           <div className="options-menu">
             <IconMenu></IconMenu>
@@ -94,7 +106,7 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
             </div>
           ) : (
             <div className="link-node-remove flow-btn-remove-arrow">
-              <IconLinkNodeRemove></IconLinkNodeRemove>
+              <IconLinkNodeRemove onClick={onRemoveNode}></IconLinkNodeRemove>
             </div>
           )}
         </div>

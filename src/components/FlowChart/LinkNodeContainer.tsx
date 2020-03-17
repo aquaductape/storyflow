@@ -5,7 +5,7 @@ import { flowChartContainerTop } from "../../lib/constants";
 
 export default function LinkNodeContainer() {
   const {
-    svgArrowState: { svgArrows }
+    linkNodeState: { linkNode }
   } = useContext(FlowContext)!;
   const style = {
     position: "absolute",
@@ -38,7 +38,7 @@ export default function LinkNodeContainer() {
           />
         </marker>
       </defs>
-      {svgArrows.map(({ x1, x2, y1, y2, color, tension, scale }, idx) => (
+      {linkNode.map(({ x1, x2, y1, y2, color, tension, scale }, idx) => (
         <NodeLink
           {...{ x1, x2, y1, y2, color, tension, scale }}
           key={idx}

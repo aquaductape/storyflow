@@ -1,5 +1,5 @@
 import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ISVGArrow } from "../models/SVGArrow";
+import { ILinkNode } from "../models/LinkNode";
 
 const getUINodes = (): FlowNodeUI[] | null => {
   const result = localStorage.getItem("UINodes");
@@ -9,10 +9,10 @@ const getUINodes = (): FlowNodeUI[] | null => {
   return null;
 };
 
-const getSVGArrows = (): ISVGArrow[] | null => {
+const getSVGArrows = (): ILinkNode[] | null => {
   const result = localStorage.getItem("SVGArrows");
   if (result) {
-    return JSON.parse(result) as ISVGArrow[];
+    return JSON.parse(result) as ILinkNode[];
   }
   return null;
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FlowJsonData, FlowNodeUI } from "../models/FlowInstructionData";
 import FlowContext from "./FlowContext";
-import { ISVGArrow, IGhostArrow } from "../models/SVGArrow";
+import { ILinkNode, IGhostArrow } from "../models/LinkNode";
 import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
 import { useAsyncSetState } from "../lib/useAsyncSetState";
 import lsStorage from "../lib/lsStorage";
@@ -13,7 +13,7 @@ const FlowProvider = (props: React.Props<any>) => {
   const [flowNodeUI, setFlowNodeUI] = useAsyncSetState<FlowNodeUI[]>(
     lsStorage.getUINodes() || []
   );
-  const [svgArrows, setSvgArrows] = useState<ISVGArrow[]>(
+  const [linkNode, setLinkNode] = useState<ILinkNode[]>(
     lsStorage.getSVGArrows() || []
   );
   const [scrollPosition, setScrollPosition] = useState<FlowScrollPosition>({
@@ -45,7 +45,7 @@ const FlowProvider = (props: React.Props<any>) => {
           flowNodeUI,
           setFlowNodeUI
         },
-        svgArrowState: { svgArrows, setSvgArrows },
+        linkNodeState: { linkNode, setLinkNode },
         scrollPositionState: { scrollPosition, setScrollPosition }
       }}
     >

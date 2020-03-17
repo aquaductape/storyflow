@@ -1,4 +1,4 @@
-export interface ISVGArrow {
+export interface ILinkNode {
   x1: number;
   y1: number;
   x2: number;

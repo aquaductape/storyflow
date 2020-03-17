@@ -1,5 +1,5 @@
 import { FlowJsonData, FlowNodeUI } from "./FlowInstructionData";
-import { ISVGArrow, IGhostArrow } from "./SVGArrow";
+import { ILinkNode, IGhostArrow } from "./LinkNode";
 import { AsyncSetState } from "../lib/useAsyncSetState";
 
 export type FlowConnecting = {
@@ -30,9 +30,9 @@ export interface IFlowContext {
     isFlowConnecting: FlowConnecting;
     setFlowConnecting: AsyncSetState<FlowConnecting>;
   };
-  svgArrowState: {
-    svgArrows: ISVGArrow[];
-    setSvgArrows: React.Dispatch<React.SetStateAction<ISVGArrow[]>>;
+  linkNodeState: {
+    linkNode: ILinkNode[];
+    setLinkNode: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
   };
   ghostArrowState: {
     ghostArrow: IGhostArrow | null;

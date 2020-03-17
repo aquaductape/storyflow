@@ -28,7 +28,6 @@ export default function Process({
       onStart={onStart}
       onDrag={(e, ui) => {
         onDrag({ id, isConnected });
-        // handleDragDelta!(e, ui);
       }}
       onStop={() => onStop({ id, element: elementRef.current! })}
       defaultPosition={{ x: translateX, y: translateY }}
@@ -47,7 +46,6 @@ export default function Process({
         }}
         ref={elementRef}
       >
-        Process
         <div
           className="textareaInput flow-decision-content"
           contentEditable={true}

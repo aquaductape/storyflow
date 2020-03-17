@@ -2,7 +2,7 @@ import { connectElementsCooridinates } from "./connectElementsCooridinates";
 import { v4 as uuid } from "uuid";
 import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
 import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ISVGArrow } from "../models/SVGArrow";
+import { ILinkNode } from "../models/LinkNode";
 
 export const onCreateArrow = async ({
   currentTarget,
@@ -16,7 +16,7 @@ export const onCreateArrow = async ({
   isFlowConnecting: FlowConnecting;
   setFlowConnecting: React.Dispatch<React.SetStateAction<FlowConnecting>>;
   setFlowNodeUI: React.Dispatch<React.SetStateAction<FlowNodeUI[]>>;
-  setSvgArrows: React.Dispatch<React.SetStateAction<ISVGArrow[]>>;
+  setSvgArrows: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
   scrollPosition: FlowScrollPosition;
 }) => {
   let fromId = "";
@@ -41,7 +41,13 @@ export const onCreateArrow = async ({
   await setFlowConnecting(prev => {
     fromId = prev.fromId;
 
-    return { fromId: "", toId: "", connecting: false };
+    // reseting this state prevents bubbling of window click, ???
+
+    // it's okay, since in that window click, this state is reseting there
+    // however why would react stetstate prevent window click
+
+    // return { fromId: "", toId: "", connecting: false };
+    return prev;
   });
 
   await setFlowNodeUI(prev => {
