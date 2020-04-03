@@ -1,6 +1,10 @@
 import React, { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearchMinus, faSearchPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearchMinus,
+  faSearchPlus,
+  faVectorSquare
+} from "@fortawesome/free-solid-svg-icons";
 import FlowContext from "../context/FlowContext";
 import { createInstruction } from "../lib/createInstruction";
 import InstructionRunner from "./InstructionRunner";
@@ -14,8 +18,15 @@ export default function Header() {
   } = useContext(FlowContext)!;
   const [displayRunner, setDisplayRunner] = useState(false);
 
-  const onZoom = (zoom: "plus" | "minus") => {
-    setFlowAreaZoom(prev => (zoom === "minus" ? prev - 5 : prev + 5));
+  const onZoom = (zoom: "plus" | "minus" | "reset") => {
+    switch (zoom) {
+      case "minus":
+        return setFlowAreaZoom(prev => (prev <= 10 ? prev : prev - 5));
+      case "plus":
+        return setFlowAreaZoom(prev => (prev >= 150 ? prev : prev + 5));
+      case "reset":
+        return setFlowAreaZoom(() => 100);
+    }
   };
   const onSave = () => {
     const uiNodesStr = JSON.stringify(flowNodeUI);
@@ -40,6 +51,10 @@ export default function Header() {
         </div>
         <div className="toolbar-item" onClick={() => onZoom("plus")}>
           <FontAwesomeIcon icon={faSearchPlus}></FontAwesomeIcon>
+        </div>
+        <div className="toolbar-item" onClick={() => onZoom("reset")}>
+          Reset Zoom
+          <FontAwesomeIcon icon={faVectorSquare}></FontAwesomeIcon>
         </div>
         <div className="toolbar-item" onClick={onSave}>
           Save

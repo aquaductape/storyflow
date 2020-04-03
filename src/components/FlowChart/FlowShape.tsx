@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { FlowDraggable, IFlowShape } from "../../models/FlowShape";
+import { FlowDraggable } from "../../models/FlowShape";
 import Decision from "./Decision";
 import Process from "./Process";
 import Start from "./Start";
@@ -16,7 +16,7 @@ export default function FlowShape({
   onBlur,
   position,
   arrowTo
-}: IFlowShape) {
+}: FlowDraggable) {
   const { dragHandlers, onDrag, onStart, onStop } = dragState;
   const { translateX, translateY } = position;
   const [deltaPosition, setDeltaPosition] = useState({

@@ -7,13 +7,14 @@ export default function DecisionAnswers({
   content,
   dragState: { dragHandlers, onDrag, onStart, onStop },
   id,
+  arrowTo,
+  type,
   isConnected,
   onBlur,
   parentId,
   position: { left, top, translateX, translateY }
 }: IDecisionAnswers) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const type = "answer";
   return (
     <Draggable
       {...dragHandlers}
@@ -30,6 +31,7 @@ export default function DecisionAnswers({
     >
       <div
         id={id}
+        data-flow-type="answer"
         className="flow-shape flow-decision flow-decision-question"
         style={{
           position: "absolute",
@@ -46,7 +48,7 @@ export default function DecisionAnswers({
         >
           {content}
         </div>
-        <FlowControl {...{ id, type }}></FlowControl>
+        <FlowControl {...{ id, type, arrowTo }}></FlowControl>
         <style jsx>
           {`
             .flow-decision-question {

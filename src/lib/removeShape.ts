@@ -20,10 +20,12 @@ export function removeNode({
       }
 
       if (item.answers) {
-        item.answers.forEach(answer => {
+        item.answers = item.answers.filter(answer => {
           if (answer.arrowTo === currentTarget.id) {
             answer.arrowTo = "";
           }
+
+          return answer.id !== currentTarget.id;
         });
       }
 
@@ -82,11 +84,30 @@ export function removeArrow({
   setSvgArrows(prev => {
     const newPrev = prev.filter(item => {
       if (item.fromId === currentTarget.id) {
-        setFlowNodeUI(prevNode => {
-          const node = prevNode.find(item => item.id === currentTarget.id)!;
-          node.arrowTo = "";
-          return [...prevNode];
-        });
+        if (currentTarget.dataset.flowType === "answer") {
+          setFlowNodeUI(prevNode => {
+            prevNode.find(item => {
+              if (item.answers) {
+                const answerNode = item.answers.find(
+                  answer => answer.id === currentTarget.id
+                );
+
+                if (answerNode) {
+                  answerNode.arrowTo = "";
+                }
+              }
+            });
+
+            return [...prevNode];
+          });
+        } else {
+          setFlowNodeUI(prevNode => {
+            const node = prevNode.find(item => item.id === currentTarget.id)!;
+            node.arrowTo = "";
+            node.isConnected = false;
+            return [...prevNode];
+          });
+        }
 
         return false;
       }

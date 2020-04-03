@@ -14,7 +14,7 @@ function App() {
       <div className="App">
         <FlowProvider>
           <Header></Header>
-          <SideBar></SideBar>
+          {/* <SideBar></SideBar> */}
           {/* <Modal modalColor={"error"}></Modal> */}
           <MenuProvider id="flow-context-menu-root" className="menu-provider">
             <FlowArea></FlowArea>

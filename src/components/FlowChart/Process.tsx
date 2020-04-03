@@ -27,6 +27,8 @@ export default function Process({
       {...dragHandlers}
       onStart={onStart}
       onDrag={(e, ui) => {
+        // rather than use isConnected property, use arrowFrom and arrowTo to determine if node is connected
+        // isConnected is redundant
         onDrag({ id, isConnected });
       }}
       onStop={() => onStop({ id, element: elementRef.current! })}

@@ -29,6 +29,7 @@ export default function InstructionRunner({
   }, []);
 
   const onNextStep = (e: React.MouseEvent, answer?: string) => {
+    if (isFinishedInstruction) setDisplayRunner(() => false);
     if (answer) {
       const result = instruction?.next(answer);
 

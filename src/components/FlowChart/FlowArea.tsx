@@ -106,6 +106,7 @@ export default function FlowArea() {
   }) => {
     if (!isConnected) return;
 
+    // console.log("dragging");
     setLinkNode(prev => {
       for (let i = 0; i < prev.length; i++) {
         const item = prev[i];

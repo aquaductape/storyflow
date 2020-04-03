@@ -21,6 +21,19 @@ export interface FlowInstruction {
 
 export type FlowType = "decision" | "process" | "start" | "exit";
 
+export interface FlowNodeAnswers {
+  id: string;
+  type: "answer";
+  isConnected: boolean;
+  top: number;
+  left: number;
+  translateX: number;
+  translateY: number;
+  content: string;
+  arrowTo: string;
+  arrowFrom: string[];
+}
+
 export interface FlowNodeUI {
   id: string;
   top: number;
@@ -32,14 +45,5 @@ export interface FlowNodeUI {
   content: string;
   isConnected: boolean;
   type: FlowType;
-  answers?: {
-    id: string;
-    top: number;
-    left: number;
-    translateX: number;
-    translateY: number;
-    content: string;
-    arrowTo: string;
-    arrowFrom: string[];
-  }[];
+  answers?: FlowNodeAnswers[];
 }

@@ -10,6 +10,8 @@ export default function SideBar() {
   } = useContext(FlowContext)!;
   const [instructionJSON, setInstructionJSON] = useState("");
   useEffect(() => {
+    if (!flowNodeUI.length) return;
+
     const instruction = createInstruction(flowNodeUI);
     setInstructionJSON(() => JSON.stringify(instruction, null, 2));
   }, [linkNode.length]);

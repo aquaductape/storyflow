@@ -59,22 +59,33 @@ export default function Decision({
       </Draggable>
 
       {answers
-        ? answers.map(({ id, // type,
-            top, left, content, translateX, translateY, arrowTo }) => (
-            <DecisionAnswers
-              arrowConnectState={arrowConnectState}
-              id={id}
-              type={type}
-              parentId={parentId}
-              position={{ top, left, translateX, translateY }}
-              content={content}
-              onBlur={onBlur}
-              dragState={dragState}
-              isConnected={isConnected}
-              arrowTo={arrowTo}
-              key={id}
-            ></DecisionAnswers>
-          ))
+        ? answers.map(
+            ({
+              id,
+              type,
+              isConnected,
+              top,
+              left,
+              content,
+              translateX,
+              translateY,
+              arrowTo
+            }) => (
+              <DecisionAnswers
+                arrowConnectState={arrowConnectState}
+                id={id}
+                type={type}
+                parentId={parentId}
+                position={{ top, left, translateX, translateY }}
+                content={content}
+                onBlur={onBlur}
+                dragState={dragState}
+                isConnected={isConnected}
+                arrowTo={arrowTo}
+                key={id}
+              ></DecisionAnswers>
+            )
+          )
         : null}
       <style jsx>
         {`

@@ -3,32 +3,38 @@ import {
   DraggableData,
   DraggableEvent
 } from "react-draggable";
-import { FlowType } from "./FlowInstructionData";
+import { FlowType, FlowNodeUI } from "./FlowInstructionData";
 
-export interface FlowDraggable {
-  id: string;
-  type: "start" | "decision" | "process" | "exit";
+export interface FlowDraggable
+  extends Omit<
+    FlowNodeUI,
+    "top" | "left" | "translateX" | "translateY" | "arrowFrom"
+  > {
+  // id: string;
+  // type: "start" | "decision" | "process" | "exit" | "answer";
   elementRef?: React.RefObject<HTMLDivElement>;
-  isConnected: boolean;
-  content: string;
+  // isConnected: boolean;
+  // content: string;
   position: {
     top: number;
     left: number;
     translateX: number;
     translateY: number;
   };
-  answers?: {
-    id: string;
-    top: number;
-    left: number;
-    translateX: number;
-    translateY: number;
-    content: string;
-    arrowTo: string;
-    arrowFrom: string[];
-  }[];
+  // answers?: {
+  //   id: string;
+  //   isConnected: boolean;
+  //   type: "answer";
+  //   top: number;
+  //   left: number;
+  //   translateX: number;
+  //   translateY: number;
+  //   content: string;
+  //   arrowTo: string;
+  //   arrowFrom: string[];
+  // }[];
 
-  arrowTo: string | undefined;
+  // arrowTo: string | undefined;
   arrowConnectState: boolean;
   dragState: {
     dragHandlers: {
@@ -55,10 +61,8 @@ export interface FlowDraggable {
   ) => any;
 }
 
-export interface IDecisionAnswers extends Omit<FlowDraggable, "answers"> {
+export interface IDecisionAnswers
+  extends Omit<FlowDraggable, "answers" | "type"> {
+  type: "answer";
   parentId: string;
-}
-
-export interface IFlowShape extends FlowDraggable {
-  type: FlowType;
 }

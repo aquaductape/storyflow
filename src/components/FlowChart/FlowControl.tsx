@@ -14,6 +14,7 @@ type IFlowControl = {
 };
 
 const refScrollPosition = { left: 0, top: 0 };
+const refConnecting = { connecting: false };
 let escapeHatchListener: any;
 export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const {
@@ -32,6 +33,9 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
     refScrollPosition.top = scrollPosition.top;
   }, [scrollPosition.left, scrollPosition.top]);
 
+  refConnecting.connecting = isFlowConnecting.connecting;
+
+  // needs rework, goal, modal listener,
   const onGhostArrow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -41,17 +45,22 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
     const idEl = document.getElementById(id)!;
     const scale = flowAreaZoom / 100;
 
-    if (linkNodeToggle) {
-      if (escapeHatchListener) {
-        escapeHatchListener.remove();
-      }
-      return;
-    }
+    // if (linkNodeToggle) {
+    //   if (escapeHatchListener) {
+    //     escapeHatchListener.remove();
+    //   }
+    //   return;
+    // }
 
-    const trackGhostArrow = (e: MouseEvent) => {
+    // needs rework, goal, modal listener,
+    let trackGhostArrow = (e: MouseEvent) => {
+      if (!refConnecting.connecting) {
+        escapeHatchListener.remove();
+        return;
+      }
       const x = e.clientX;
       const y = e.clientY;
-      // console.log({ x, y });
+      console.log({ x, y });
 
       const result = closestPointCoor({
         elFrom: idEl,
@@ -89,7 +98,8 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
     <div className="main">
       {isFlowConnecting.connecting &&
       isFlowConnecting.fromId !== id &&
-      type !== "start" ? (
+      type !== "start" &&
+      type !== "answer" ? (
         <div className="connecting flow-connecting"></div>
       ) : null}
       <div className="flow-control">
@@ -97,7 +107,7 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
           <div className="options-menu">
             <IconMenu></IconMenu>
           </div>
-          {!arrowTo ? (
+          {!arrowTo || type === "decision" ? (
             <div
               className="link-node flow-btn-create-arrow"
               onClick={onGhostArrow}
@@ -106,11 +116,11 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
             </div>
           ) : (
             <div className="link-node-remove flow-btn-remove-arrow">
-              <IconLinkNodeRemove onClick={onRemoveNode}></IconLinkNodeRemove>
+              <IconLinkNodeRemove></IconLinkNodeRemove>
             </div>
           )}
         </div>
-        <div className="close flow-btn-remove-node">
+        <div className="close flow-btn-remove-node" onClick={onRemoveNode}>
           <IconClose></IconClose>
         </div>
       </div>

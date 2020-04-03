@@ -1,7 +1,7 @@
 import { connectElementsCooridinates } from "./connectElementsCooridinates";
 import { v4 as uuid } from "uuid";
 import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
-import { FlowNodeUI } from "../models/FlowInstructionData";
+import { FlowNodeUI, FlowNodeAnswers } from "../models/FlowInstructionData";
 import { ILinkNode } from "../models/LinkNode";
 
 export const onCreateArrow = async ({
@@ -51,8 +51,25 @@ export const onCreateArrow = async ({
   });
 
   await setFlowNodeUI(prev => {
-    const source = prev.find(item => item.id === fromId)!;
     const target = prev.find(item => item.id === currentTarget.id)!;
+    let sourceVal;
+    let sourceAnswer;
+
+    sourceVal = prev.find(item => {
+      if (item.id === fromId) return true;
+
+      if (!item.answers) return false;
+      const foundAnswer = item.answers.find(answer => answer.id === fromId)!;
+      if (foundAnswer) {
+        sourceAnswer = foundAnswer;
+
+        return true;
+      }
+    })!;
+    sourceVal = sourceAnswer ? sourceAnswer : sourceVal;
+    // Property is used before being assigned TS Error
+    // using different variable to avoid that error
+    const source = sourceVal as FlowNodeUI | FlowNodeAnswers;
 
     source.arrowTo = currentTarget.id;
     target.arrowFrom.push(fromId);
@@ -61,7 +78,7 @@ export const onCreateArrow = async ({
 
     if (source.type === "decision") {
       const sourceBounding = document
-        .getElementById(source.id)!
+        .getElementById(source!.id)!
         .getBoundingClientRect();
       const targetBounding = document
         .getElementById(target.id)!
@@ -73,8 +90,10 @@ export const onCreateArrow = async ({
       }
       source.answers!.push({
         id: answerId,
+        type: "answer",
         arrowFrom: [fromId],
         arrowTo: currentTarget.id,
+        isConnected: true,
         content: "yes/no",
         left:
           (sourceBounding.left + targetBounding.right) / 2 +
