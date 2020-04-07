@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FlowJsonData, FlowNodeUI } from "../models/FlowInstructionData";
+import { FlowJsonData, FlowNodeUI } from "../ts/models/FlowInstructionData";
 import FlowContext from "./FlowContext";
-import { ILinkNode, IGhostArrow } from "../models/LinkNode";
-import { FlowConnecting, FlowScrollPosition } from "../models/FlowContext";
+import { ILinkNode, IGhostArrow } from "../ts/models/LinkNode";
+import { FlowConnecting, FlowScrollPosition } from "../ts/models/FlowContext";
 import { useAsyncSetState } from "../lib/useAsyncSetState";
 import lsStorage from "../lib/lsStorage";
-import updateInstructions from "../lib/updateInstructions";
+import { updateNodes, updateNodeLinks } from "../lib/updateInstructions";
 
 const FlowProvider = (props: React.Props<any>) => {
   const [flowJsonData, setFlowJsonData] = useState<FlowJsonData[]>([]);
@@ -15,22 +15,23 @@ const FlowProvider = (props: React.Props<any>) => {
   const [linkNode, setLinkNode] = useState<ILinkNode[]>([]);
   const [scrollPosition, setScrollPosition] = useState<FlowScrollPosition>({
     top: 0,
-    left: 0
+    left: 0,
   });
   const [isFlowConnecting, setFlowConnecting] = useAsyncSetState<
     FlowConnecting
   >({
     fromId: "",
     toId: "",
-    connecting: false
+    connecting: false,
   });
 
   useEffect(() => {
-    setFlowNodeUI(() =>
-      // support prev version
-      updateInstructions(lsStorage.getUINodes() || [])
-    );
+    // support prev version
+    // setFlowNodeUI(() => updateNodes(lsStorage.getUINodes() || []));
+    setFlowNodeUI(() => lsStorage.getUINodes() || []);
 
+    // support prev version
+    // setLinkNode(() => updateNodeLinks(lsStorage.getSVGArrows() || []));
     setLinkNode(() => lsStorage.getSVGArrows() || []);
   }, []);
 
@@ -39,20 +40,20 @@ const FlowProvider = (props: React.Props<any>) => {
       value={{
         ghostArrowState: {
           ghostArrow,
-          setGhostArrow
+          setGhostArrow,
         },
         flowAreaZoomState: { flowAreaZoom, setFlowAreaZoom },
         flowConnectState: {
           isFlowConnecting,
-          setFlowConnecting
+          setFlowConnecting,
         },
         flowJsonDataState: { flowJsonData, setFlowJsonData },
         flowNodeUIState: {
           flowNodeUI,
-          setFlowNodeUI
+          setFlowNodeUI,
         },
         linkNodeState: { linkNode, setLinkNode },
-        scrollPositionState: { scrollPosition, setScrollPosition }
+        scrollPositionState: { scrollPosition, setScrollPosition },
       }}
     >
       {props.children}

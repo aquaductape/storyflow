@@ -1,4 +1,7 @@
-import { FlowJsonData, FlowInstruction } from "../models/FlowInstructionData";
+import {
+  FlowJsonData,
+  FlowInstruction,
+} from "../ts/models/FlowInstructionData";
 
 export default function instructionEvent(
   instruction: FlowJsonData[]
@@ -15,7 +18,7 @@ export default function instructionEvent(
       const item = instruction[this.currentIdx];
 
       if (item.question) {
-        const itemAnswer = item.answers?.find(item => item.m === answer);
+        const itemAnswer = item.answers?.find((item) => item.m === answer);
         this.currentIdx = itemAnswer?.next as number;
         return true;
       }
@@ -24,6 +27,6 @@ export default function instructionEvent(
       this.currentIdx = item.next as number;
 
       return true;
-    }
+    },
   };
 }

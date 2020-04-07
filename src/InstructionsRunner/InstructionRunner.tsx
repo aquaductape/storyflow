@@ -2,16 +2,19 @@ import React, { useState, useContext, useEffect } from "react";
 import FlowContext from "../context/FlowContext";
 import { createInstruction } from "../lib/createInstruction";
 import instructionEvent from "../lib/instructionEvent";
-import { FlowJsonData, FlowInstruction } from "../models/FlowInstructionData";
+import {
+  FlowJsonData,
+  FlowInstruction,
+} from "../ts/models/FlowInstructionData";
 
 export default function InstructionRunner({
-  setDisplayRunner
+  setDisplayRunner,
 }: {
   setDisplayRunner: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const {
     flowNodeUIState: { flowNodeUI },
-    flowJsonDataState: { flowJsonData, setFlowJsonData }
+    flowJsonDataState: { flowJsonData, setFlowJsonData },
   } = useContext(FlowContext)!;
 
   const [isFinishedBuilding, setIsFinishedBuilding] = useState(false);
@@ -65,7 +68,7 @@ export default function InstructionRunner({
                 return (
                   <button
                     className="btn-answer"
-                    onClick={e => onNextStep(e, answer.m)}
+                    onClick={(e) => onNextStep(e, answer.m)}
                     key={idx}
                   >
                     {answer.m}

@@ -1,9 +1,8 @@
-import React, { useState, useRef } from "react";
-import { FlowDraggable } from "../../models/FlowShape";
-import Decision from "./Decision";
+import React from "react";
 import Process from "./Process";
 import Start from "./Start";
-import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
+import { FlowDraggable } from "../../ts/models/FlowShape";
+import Decision from "./Decision";
 
 export default function FlowShape({
   type,
@@ -15,26 +14,8 @@ export default function FlowShape({
   answers,
   onBlur,
   position,
-  arrowTo
+  arrowTo,
 }: FlowDraggable) {
-  const { dragHandlers, onDrag, onStart, onStop } = dragState;
-  const { translateX, translateY } = position;
-  const [deltaPosition, setDeltaPosition] = useState({
-    x: 200,
-    y: 200
-  });
-  const elementRef = useRef<HTMLDivElement>(null);
-
-  const handleDragDelta = (e: DraggableEvent, ui: DraggableData) => {
-    const { x, y } = deltaPosition;
-    setDeltaPosition(prev => {
-      prev.x = x + ui.deltaX;
-      prev.y = y + ui.deltaY;
-
-      return { ...prev };
-    });
-  };
-
   switch (type) {
     case "decision":
       return (
@@ -42,15 +23,14 @@ export default function FlowShape({
           {...{
             id,
             type,
-            elementRef,
             content,
             arrowConnectState,
-            dragState: { ...dragState, handleDragDelta },
+            dragState: { ...dragState },
             position,
             answers,
             isConnected,
             arrowTo,
-            onBlur
+            onBlur,
           }}
         ></Decision>
       );
@@ -62,11 +42,11 @@ export default function FlowShape({
             type,
             arrowConnectState,
             content,
-            dragState: { ...dragState, handleDragDelta },
+            dragState: { ...dragState },
             position,
             isConnected,
             arrowTo,
-            onBlur
+            onBlur,
           }}
         ></Process>
       );
@@ -78,15 +58,15 @@ export default function FlowShape({
             type,
             arrowConnectState,
             content,
-            dragState: { ...dragState, handleDragDelta },
+            dragState: { ...dragState },
             position,
             isConnected,
             arrowTo,
-            onBlur
+            onBlur,
           }}
         ></Start>
       );
     default:
-      return <div></div>;
+      return null;
   }
 }

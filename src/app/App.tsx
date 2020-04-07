@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "./App.scss";
-import FlowProvider from "./context/FlowProvider";
-import FlowArea from "./components/FlowChart/FlowArea";
-import ContextMenu from "./components/ContextMenu";
+import FlowProvider from "../context/FlowProvider";
+import FlowArea from "../FlowChart/Area";
+import ContextMenu from "../ContextMenu";
 import { MenuProvider } from "react-contexify";
-import Header from "./components/Header";
-import Modal from "./components/Modal";
-import SideBar from "./components/SideBar/SideBar";
+import Header from "../Header/Header";
+import Modal from "../Modal/Modal";
+import SideBar from "../SideBar/SideBar";
 
 function App() {
   return (

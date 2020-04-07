@@ -1,11 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import FlowContext from "../../context/FlowContext";
+import React, { useState, useRef } from "react";
 import { ReactComponent as IconMenu } from "../../assets/ant-menu.svg";
 import { ReactComponent as IconClose } from "../../assets/close.svg";
 import { ReactComponent as IconLinkNode } from "../../assets/link-node.svg";
 import { ReactComponent as IconLinkNodeRemove } from "../../assets/link-node-remove.svg";
-import addEscapeHatch from "../../lib/removeListenerEscapeHatch";
+import addEscapeHatch from "../../lib/addEscapeHatch";
 import { closestPointCoor } from "../../lib/closestPoint";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../app/rootReducer";
+import {
+  setGhostNodeLink,
+  removeGhostNodeLink,
+  setNodeConnecting,
+} from "../../ContextMenu/flowNodesSlice";
+import { onCreateArrow } from "../../lib/createArrow";
 
 type IFlowControl = {
   id: string;
@@ -17,47 +24,37 @@ const refScrollPosition = { left: 0, top: 0 };
 const refConnecting = { connecting: false };
 let escapeHatchListener: any;
 export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
-  const {
-    flowConnectState: { isFlowConnecting, setFlowConnecting },
-    ghostArrowState: { ghostArrow, setGhostArrow },
-    scrollPositionState: { scrollPosition },
-    flowAreaZoomState: { flowAreaZoom }
-  } = useContext(FlowContext)!;
-  const [linkNodeToggle, setLinkNodeToggle] = useState(false);
-  let btnCreateArrowContent = isFlowConnecting.connecting
-    ? "Connect"
-    : "Create Arrow";
-  let btnConnect = isFlowConnecting.fromId === id ? "Cancel" : "Connect";
-  useEffect(() => {
-    refScrollPosition.left = scrollPosition.left;
-    refScrollPosition.top = scrollPosition.top;
-  }, [scrollPosition.left, scrollPosition.top]);
+  const btnRemoveNodeRef = useRef<HTMLDivElement>(null);
+  const btnCreateArrowRef = useRef<HTMLDivElement>(null);
+  const [isStartDrag, setIsStartDrag] = useState(false);
+  const dispatch = useDispatch();
+  // const [scale, setScale] = useState(100);
+  // const [scrollPosition, setScrollPosition] = useState({ top: 0, left: 0 });
+  const isNodeConnecting = useSelector(
+    (state: RootState) => state.flowNodes.isNodeConnecting
+  );
 
-  refConnecting.connecting = isFlowConnecting.connecting;
+  // const flowAreaZoom = 100;
+  const [linkNodeToggle, setLinkNodeToggle] = useState(false);
+  // useEffect(() => {
+  //   refScrollPosition.left = scrollPosition.left;
+  //   refScrollPosition.top = scrollPosition.top;
+  // }, [scrollPosition.left, scrollPosition.top]);
 
   // needs rework, goal, modal listener,
   const onGhostArrow = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
     const flowChartContainer = document.querySelector(
       ".flow-area-inner"
     )! as HTMLElement;
     const idEl = document.getElementById(id)!;
-    const scale = flowAreaZoom / 100;
-
-    // if (linkNodeToggle) {
-    //   if (escapeHatchListener) {
-    //     escapeHatchListener.remove();
-    //   }
-    //   return;
-    // }
-
-    // needs rework, goal, modal listener,
+    const scrollPositionLeft = parseInt(
+      flowChartContainer.dataset.areaScrollPositionLeft!
+    );
+    const scrollPositionTop = parseInt(
+      flowChartContainer.dataset.areaScrollPositionTop!
+    );
+    const scale = parseInt(flowChartContainer.dataset.areaZoom!) / 100;
     let trackGhostArrow = (e: MouseEvent) => {
-      if (!refConnecting.connecting) {
-        escapeHatchListener.remove();
-        return;
-      }
       const x = e.clientX;
       const y = e.clientY;
       console.log({ x, y });
@@ -65,42 +62,67 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
       const result = closestPointCoor({
         elFrom: idEl,
         toCoor: { x, y },
-        scale
+        scale,
       });
 
-      result.x1 += refScrollPosition.left * (1 / scale);
-      result.x2 += refScrollPosition.left * (1 / scale);
-      result.y1 += refScrollPosition.top * (1 / scale);
-      result.y2 += refScrollPosition.top * (1 / scale);
-      setGhostArrow(() => ({ ...result, scale: 1, strokeDashArray: "12px" }));
+      result.x1 += scrollPositionLeft * (1 / scale);
+      result.x2 += scrollPositionLeft * (1 / scale);
+      result.y1 += scrollPositionTop * (1 / scale);
+      result.y2 += scrollPositionTop * (1 / scale);
+
+      dispatch(setGhostNodeLink({ ...result, scale, strokeDashArray: "12px" }));
     };
 
-    console.log("add");
-    flowChartContainer.addEventListener("mousemove", trackGhostArrow);
+    escapeHatchListener = addEscapeHatch({
+      target: btnCreateArrowRef.current!,
+      build: () => {
+        console.log("add");
+        flowChartContainer.addEventListener("mousemove", trackGhostArrow);
+        dispatch(setNodeConnecting({ fromId: id, toId: "", connecting: true }));
+      },
+      onExit: () => {
+        console.log("delete");
+        dispatch(removeGhostNodeLink());
+        flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
 
-    escapeHatchListener = addEscapeHatch(() => {
-      console.log("delete");
-      setGhostArrow(() => null);
-      flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
-      setFlowConnecting(() => ({ fromId: "", toId: "", connecting: false }));
-      setLinkNodeToggle(() => false);
+        setTimeout(() => {
+          dispatch(
+            setNodeConnecting({
+              fromId: "",
+              toId: "",
+              connecting: false,
+            })
+          );
+        }, 100);
+      },
     });
-    setLinkNodeToggle(() => true);
   };
 
   const onRemoveNode = () => {
-    if (escapeHatchListener) {
-      escapeHatchListener.remove();
-    }
+    console.log("remove");
+  };
+
+  const onConnectNodes = () => {
+    onCreateArrow({
+      currentTarget,
+      is,
+      setFlowConnecting,
+      setFlowNodeUI,
+      setSvgArrows: setLinkNode,
+      scrollPosition,
+    });
   };
 
   return (
     <div className="main">
-      {isFlowConnecting.connecting &&
-      isFlowConnecting.fromId !== id &&
+      {isNodeConnecting.connecting &&
+      isNodeConnecting.fromId !== id &&
       type !== "start" &&
       type !== "answer" ? (
-        <div className="connecting flow-connecting"></div>
+        <div
+          className="connecting flow-connecting"
+          onClick={onConnectNodes}
+        ></div>
       ) : null}
       <div className="flow-control">
         <div className="options">
@@ -110,6 +132,7 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
           {!arrowTo || type === "decision" ? (
             <div
               className="link-node flow-btn-create-arrow"
+              ref={btnCreateArrowRef}
               onClick={onGhostArrow}
             >
               <IconLinkNode></IconLinkNode>
@@ -120,7 +143,11 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
             </div>
           )}
         </div>
-        <div className="close flow-btn-remove-node" onClick={onRemoveNode}>
+        <div
+          className="close flow-btn-remove-node"
+          ref={btnRemoveNodeRef}
+          onClick={onRemoveNode}
+        >
           <IconClose></IconClose>
         </div>
       </div>

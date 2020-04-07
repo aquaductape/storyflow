@@ -1,4 +1,4 @@
-import { FlowNodeUI, FlowJsonData } from "../models/FlowInstructionData";
+import { FlowNodeUI, FlowJsonData } from "../ts/models/FlowInstructionData";
 
 interface LooseObject {
   [key: string]: number | undefined;
@@ -30,14 +30,14 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
       item.question = currentNode.content;
       item.answers = [];
       const decisionQuestion = currentNode.answers;
-      decisionQuestion?.forEach(answer => {
+      decisionQuestion?.forEach((answer) => {
         // item.answers?.push({ m: answer.content, next: answer.arrowTo });
         // const visitedIndex = prevNodeVisited[answer.arrowTo];
 
         // if (visitedIndex !== index) {
         item.answers?.push({
           m: answer.content,
-          next: answer.arrowTo
+          next: answer.arrowTo,
           // next: visitedIndex
         });
         // } else {
@@ -62,15 +62,17 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
     if (currentNode.type === "decision") {
       const decisionQuestion = currentNode.answers;
 
-      decisionQuestion?.forEach(answer => {
-        const nextNode = flowNodes.find(node => node.id === answer.arrowTo);
+      decisionQuestion?.forEach((answer) => {
+        const nextNode = flowNodes.find((node) => node.id === answer.arrowTo);
 
         if (nextNode && !prevNodeVisited[nextNode.id]) {
           queue.push(nextNode);
         }
       });
     } else {
-      const nextNode = flowNodes.find(node => node.id === currentNode.arrowTo);
+      const nextNode = flowNodes.find(
+        (node) => node.id === currentNode.arrowTo
+      );
       // throw error if procedure has empty next
       // user may accidently have unfinished paths
       // use exit to flag ending
@@ -81,10 +83,10 @@ export const createInstruction = (flowNodes: FlowNodeUI[]) => {
     }
   }
 
-  list.forEach(item => {
+  list.forEach((item) => {
     if (item.question) {
       item.answers?.forEach(
-        item2 =>
+        (item2) =>
           (item2.next =
             item2.next !== undefined ? prevNodeVisited[item2.next] : undefined)
       );

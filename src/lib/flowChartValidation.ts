@@ -1,5 +1,5 @@
-import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ILinkNode } from "../models/LinkNode";
+import { FlowNodeUI } from "../ts/models/FlowInstructionData";
+import { ILinkNode } from "../ts/models/LinkNode";
 
 interface IFlowChartValidation {
   flowNodeUI: FlowNodeUI[];
@@ -14,7 +14,7 @@ const findInfiniteProcedure = ({ flowNodeUI, id }: IfindInfiniteProcedure) => {
 };
 export default function flowChartValidation({
   flowNodeUI,
-  svgArrows
+  svgArrows,
 }: IFlowChartValidation) {
   type Imessage = {
     type: string;
@@ -32,7 +32,7 @@ export default function flowChartValidation({
     }
   }
 
-  flowNodeUI.forEach(item => {
+  flowNodeUI.forEach((item) => {
     if (item.type === "decision") {
       if (item.answers!.length <= 1) {
         const info = `Must have at least two answers, currently has ${

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { FlowDraggable } from "../../models/FlowShape";
+import { FlowDraggable } from "../../ts/models/FlowShape";
 import Draggable from "react-draggable";
-import FlowControl from "./FlowControl";
+import FlowControl from "../Control";
 import DecisionAnswers from "./DecisionAnswers";
 
 export default function Decision({
@@ -13,7 +13,7 @@ export default function Decision({
   answers,
   position: { top, left, translateX, translateY },
   dragState,
-  onBlur
+  onBlur,
 }: FlowDraggable) {
   // const [isConnected, setIsConnected] = useState(false);
   const { dragHandlers, onDrag, onStart, onStop } = dragState;
@@ -42,13 +42,13 @@ export default function Decision({
           style={{
             position: "absolute",
             top: `${top || 0}px`,
-            left: `${left || 0}px`
+            left: `${left || 0}px`,
           }}
           ref={elementRef}
         >
           <div
             className="textareaInput flow-decision-content"
-            onBlur={e => onBlur(e, id)}
+            onBlur={(e) => onBlur(e, id)}
             contentEditable={true}
             suppressContentEditableWarning={true}
           >
@@ -69,7 +69,7 @@ export default function Decision({
               content,
               translateX,
               translateY,
-              arrowTo
+              arrowTo,
             }) => (
               <DecisionAnswers
                 arrowConnectState={arrowConnectState}

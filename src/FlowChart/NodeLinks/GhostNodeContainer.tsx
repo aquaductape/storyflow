@@ -1,17 +1,21 @@
 import React, { useContext } from "react";
-import FlowContext from "../../context/FlowContext";
 import NodeLink from "./NodeLink";
 import { flowChartContainerTop } from "../../lib/constants";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/rootReducer";
 
-export default function LinkNodeContainer() {
-  const {
-    linkNodeState: { linkNode }
-  } = useContext(FlowContext)!;
+export default function GhostNodeContainer() {
   const style = {
     position: "absolute",
     top: `-${flowChartContainerTop}px`,
-    left: "0"
+    left: "0",
+    zIndex: 100,
+    pointerEvents: "none",
   } as React.CSSProperties;
+
+  const ghostNodeLink = useSelector(
+    (state: RootState) => state.flowNodes.nodeLinkGhost
+  );
 
   return (
     <svg
@@ -38,12 +42,7 @@ export default function LinkNodeContainer() {
           />
         </marker>
       </defs>
-      {linkNode.map(({ x1, x2, y1, y2, color, tension, scale }, idx) => (
-        <NodeLink
-          {...{ x1, x2, y1, y2, color, tension, scale }}
-          key={idx}
-        ></NodeLink>
-      ))}
+      {ghostNodeLink && <NodeLink {...ghostNodeLink}></NodeLink>}
     </svg>
   );
 }

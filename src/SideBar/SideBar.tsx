@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import FlowContext from "../../context/FlowContext";
-import { createInstruction } from "../../lib/createInstruction";
+import FlowContext from "../context/FlowContext";
+import { createInstruction } from "../lib/createInstruction";
 
 export default function SideBar() {
   const {
     flowNodeUIState: { flowNodeUI },
     linkNodeState: { linkNode },
-    flowAreaZoomState: { setFlowAreaZoom }
   } = useContext(FlowContext)!;
   const [instructionJSON, setInstructionJSON] = useState("");
   useEffect(() => {

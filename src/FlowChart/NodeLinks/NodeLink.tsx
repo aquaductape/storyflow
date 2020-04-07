@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ILinkNode } from "../../models/LinkNode";
+import { ILinkNode } from "../../ts/models/LinkNode";
 import { flowChartContainerTop } from "../../lib/constants";
 
 export default function NodeLink({
@@ -10,8 +10,8 @@ export default function NodeLink({
   color,
   scale,
   strokeDashArray,
-  tension
-}: Omit<ILinkNode, "fromId" | "toId">) {
+  tension,
+}: Omit<ILinkNode, "id" | "fromId" | "toId">) {
   const delta = (x2 - x1) * (tension || 0);
   // x2 = (x1 + x2) / 2;
   // y2 = (y1 + y2) / 2;

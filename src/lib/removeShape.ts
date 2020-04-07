@@ -1,26 +1,26 @@
-import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ILinkNode } from "../models/LinkNode";
+import { FlowNodeUI } from "../ts/models/FlowInstructionData";
+import { ILinkNode } from "../ts/models/LinkNode";
 
 export function removeNode({
   currentTarget,
-  setFlowNodeUI
+  setFlowNodeUI,
 }: {
   currentTarget: HTMLElement;
   setFlowNodeUI: React.Dispatch<React.SetStateAction<FlowNodeUI[]>>;
 }) {
-  setFlowNodeUI(prev => {
-    const newPrev = prev.filter(item => {
+  setFlowNodeUI((prev) => {
+    const newPrev = prev.filter((item) => {
       if (item.id === currentTarget.id) {
         return false;
       }
 
-      item.arrowFrom = item.arrowFrom.filter(id => id !== currentTarget.id);
+      item.arrowFrom = item.arrowFrom.filter((id) => id !== currentTarget.id);
       if (item.arrowTo === currentTarget.id) {
         item.arrowTo = "";
       }
 
       if (item.answers) {
-        item.answers = item.answers.filter(answer => {
+        item.answers = item.answers.filter((answer) => {
           if (answer.arrowTo === currentTarget.id) {
             answer.arrowTo = "";
           }
@@ -37,17 +37,17 @@ export function removeNode({
 
 export function removeAllArrows({
   currentTarget,
-  setSvgArrows
+  setSvgArrows,
 }: {
   currentTarget: HTMLElement;
   setSvgArrows: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
 }) {
-  setSvgArrows(prev => {
+  setSvgArrows((prev) => {
     const decisionSiblingArrow = <{ [key: string]: boolean | undefined }>{};
     let newPrev;
 
     if (currentTarget.dataset.flowType === "decision") {
-      newPrev = prev.filter(item => {
+      newPrev = prev.filter((item) => {
         if (item.toId === currentTarget.id) return false;
 
         if (item.fromId === currentTarget.id) {
@@ -58,7 +58,7 @@ export function removeAllArrows({
         return true;
       });
     } else {
-      newPrev = prev.filter(item => {
+      newPrev = prev.filter((item) => {
         if (
           item.fromId === currentTarget.id ||
           item.toId === currentTarget.id
@@ -75,21 +75,21 @@ export function removeAllArrows({
 export function removeArrow({
   currentTarget,
   setSvgArrows,
-  setFlowNodeUI
+  setFlowNodeUI,
 }: {
   currentTarget: HTMLElement;
   setFlowNodeUI: React.Dispatch<React.SetStateAction<FlowNodeUI[]>>;
   setSvgArrows: React.Dispatch<React.SetStateAction<ILinkNode[]>>;
 }) {
-  setSvgArrows(prev => {
-    const newPrev = prev.filter(item => {
+  setSvgArrows((prev) => {
+    const newPrev = prev.filter((item) => {
       if (item.fromId === currentTarget.id) {
         if (currentTarget.dataset.flowType === "answer") {
-          setFlowNodeUI(prevNode => {
-            prevNode.find(item => {
+          setFlowNodeUI((prevNode) => {
+            prevNode.find((item) => {
               if (item.answers) {
                 const answerNode = item.answers.find(
-                  answer => answer.id === currentTarget.id
+                  (answer) => answer.id === currentTarget.id
                 );
 
                 if (answerNode) {
@@ -101,8 +101,8 @@ export function removeArrow({
             return [...prevNode];
           });
         } else {
-          setFlowNodeUI(prevNode => {
-            const node = prevNode.find(item => item.id === currentTarget.id)!;
+          setFlowNodeUI((prevNode) => {
+            const node = prevNode.find((item) => item.id === currentTarget.id)!;
             node.arrowTo = "";
             node.isConnected = false;
             return [...prevNode];

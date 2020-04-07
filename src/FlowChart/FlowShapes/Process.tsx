@@ -1,9 +1,8 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { FlowDraggable } from "../../models/FlowShape";
 import Draggable from "react-draggable";
-import FlowControl from "./FlowControl";
-import FlowContext from "../../context/FlowContext";
 import AntMenu from "../../assets/ant-menu.svg";
+import { FlowDraggable } from "../../ts/models/FlowShape";
+import FlowControl from "../Control";
 
 export default function Process({
   id,
@@ -14,11 +13,8 @@ export default function Process({
   position: { top, left, translateX, translateY },
   dragState: { dragHandlers, onStart, onDrag, onStop, handleDragDelta },
   onBlur,
-  arrowTo
+  arrowTo,
 }: FlowDraggable) {
-  const {
-    flowAreaZoomState: { flowAreaZoom }
-  } = useContext(FlowContext)!;
   const elementRef = useRef<HTMLDivElement>(null);
   // const [isConnected, setIsConnected] = useState(false);
 
@@ -44,7 +40,7 @@ export default function Process({
         style={{
           position: "absolute",
           top: `${top || 0}px`,
-          left: `${left || 0}px`
+          left: `${left || 0}px`,
         }}
         ref={elementRef}
       >
@@ -52,7 +48,7 @@ export default function Process({
           className="textareaInput flow-decision-content"
           contentEditable={true}
           suppressContentEditableWarning={true}
-          onBlur={e => onBlur(e, id)}
+          onBlur={(e) => onBlur(e, id)}
         >
           {content}
         </div>

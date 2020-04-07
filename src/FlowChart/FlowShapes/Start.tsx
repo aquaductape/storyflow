@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
-import { FlowDraggable } from "../../models/FlowShape";
 import Draggable from "react-draggable";
-import FlowControl from "./FlowControl";
+import { FlowDraggable } from "../../ts/models/FlowShape";
+import FlowControl from "../Control";
 
 export default function Start({
   id,
@@ -12,7 +12,7 @@ export default function Start({
   arrowConnectState,
   position: { top, left, translateX, translateY },
   dragState: { dragHandlers, onStart, onDrag, onStop },
-  onBlur
+  onBlur,
 }: FlowDraggable) {
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -36,13 +36,13 @@ export default function Start({
         style={{
           position: "absolute",
           top: `${top || 0}px`,
-          left: `${left || 0}px`
+          left: `${left || 0}px`,
         }}
         ref={elementRef}
       >
         <div
           className="textareaInput flow-decision-content"
-          onBlur={e => onBlur(e, id)}
+          onBlur={(e) => onBlur(e, id)}
           contentEditable={true}
           suppressContentEditableWarning={true}
         >

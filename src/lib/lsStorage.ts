@@ -1,5 +1,5 @@
-import { FlowNodeUI } from "../models/FlowInstructionData";
-import { ILinkNode } from "../models/LinkNode";
+import { FlowNodeUI } from "../ts/models/FlowInstructionData";
+import { ILinkNode } from "../ts/models/LinkNode";
 
 const getUINodes = (): FlowNodeUI[] | null => {
   const result = localStorage.getItem("UINodes");
@@ -19,7 +19,7 @@ const getSVGArrows = (): ILinkNode[] | null => {
 
 const lsStorage = {
   getSVGArrows,
-  getUINodes
+  getUINodes,
 };
 
 export default lsStorage;

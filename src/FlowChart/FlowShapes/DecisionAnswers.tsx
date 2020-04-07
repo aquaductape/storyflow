@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Draggable from "react-draggable";
-import { IDecisionAnswers } from "../../models/FlowShape";
-import FlowControl from "./FlowControl";
+import { IDecisionAnswers } from "../../ts/models/FlowShape";
+import FlowControl from "../Control";
 export default function DecisionAnswers({
   arrowConnectState,
   content,
@@ -12,7 +12,7 @@ export default function DecisionAnswers({
   isConnected,
   onBlur,
   parentId,
-  position: { left, top, translateX, translateY }
+  position: { left, top, translateX, translateY },
 }: IDecisionAnswers) {
   const elementRef = useRef<HTMLDivElement>(null);
   return (
@@ -36,12 +36,12 @@ export default function DecisionAnswers({
         style={{
           position: "absolute",
           top: `${top || 0}px`,
-          left: `${left || 0}px`
+          left: `${left || 0}px`,
         }}
         ref={elementRef}
       >
         <div
-          onBlur={e => onBlur(e, id, parentId)}
+          onBlur={(e) => onBlur(e, id, parentId)}
           className="textareaInput flow-decision-content"
           contentEditable={true}
           suppressContentEditableWarning={true}

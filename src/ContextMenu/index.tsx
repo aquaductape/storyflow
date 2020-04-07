@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import FlowContext from "../context/FlowContext";
 import { v4 as uuid } from "uuid";
-import { FlowType, FlowNodeUI } from "../models/FlowInstructionData";
+import { FlowType, FlowNodeUI } from "../ts/models/FlowInstructionData";
 import { Menu, Item, MenuProvider } from "react-contexify";
 import { TriggerEvent } from "react-contexify/lib/types";
 
@@ -9,7 +9,7 @@ export default function ContextMenu() {
   const {
     flowNodeUIState: { flowNodeUI, setFlowNodeUI },
     scrollPositionState: { scrollPosition },
-    flowAreaZoomState: { flowAreaZoom }
+    flowAreaZoomState: { flowAreaZoom },
   } = useContext(FlowContext)!;
   const hasFlowHasStart = flowNodeUI.length
     ? flowNodeUI[0].type === "start"
@@ -19,7 +19,7 @@ export default function ContextMenu() {
     const { pageX, pageY, clientX, clientY } = e;
 
     const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
-    setFlowNodeUI(prev => {
+    setFlowNodeUI((prev) => {
       const item = {
         id: uuid(),
         isConnected: false,
@@ -30,7 +30,7 @@ export default function ContextMenu() {
         translateY: 0,
         type,
         arrowFrom: [],
-        arrowTo: ""
+        arrowTo: "",
       } as FlowNodeUI;
 
       if (type === "start") {
@@ -46,10 +46,10 @@ export default function ContextMenu() {
       {hasStart ? (
         <Item disabled>Start (already added)</Item>
       ) : (
-        <Item onClick={e => addFlowShape(e.event, "start")}>Start</Item>
+        <Item onClick={(e) => addFlowShape(e.event, "start")}>Start</Item>
       )}
-      <Item onClick={e => addFlowShape(e.event, "decision")}>Decision</Item>
-      <Item onClick={e => addFlowShape(e.event, "process")}>Process</Item>
+      <Item onClick={(e) => addFlowShape(e.event, "decision")}>Decision</Item>
+      <Item onClick={(e) => addFlowShape(e.event, "process")}>Process</Item>
     </Menu>
   );
 }

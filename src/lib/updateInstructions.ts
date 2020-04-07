@@ -1,11 +1,13 @@
-import { FlowNodeUI } from "../models/FlowInstructionData";
+import { FlowNodeUI } from "../ts/models/FlowInstructionData";
 import lsStorage from "./lsStorage";
+import { ILinkNode } from "../ts/models/LinkNode";
+import { v4 as uuid } from "uuid";
 
-export default function updateInstructions(instructions: FlowNodeUI[]) {
+export function updateNodes(instructions: FlowNodeUI[]) {
   // add type attribute on answers
-  instructions.forEach(item => {
+  instructions.forEach((item) => {
     if (item.answers) {
-      item.answers.forEach(answer => {
+      item.answers.forEach((answer) => {
         answer.type = "answer";
 
         if (answer.arrowTo) {
@@ -18,9 +20,18 @@ export default function updateInstructions(instructions: FlowNodeUI[]) {
   });
   // add isConnect on answers
   console.log(
-    "instructions updated, added type and isConnected to answers object"
+    "instruction nodes updated, added type and isConnected to answers object"
   );
   // localStorage.setItem('instructions_v0.0.1', 'true')
 
-  return instructions;
+  return [...instructions];
+}
+
+export function updateNodeLinks(links: ILinkNode[]) {
+  // add unique id's to node links
+  links.forEach((link) => {
+    link.id = uuid();
+  });
+  console.log("instruction links updated, added unique id's");
+  return [...links];
 }

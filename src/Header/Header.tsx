@@ -1,31 +1,55 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearchMinus,
   faSearchPlus,
-  faVectorSquare
+  faVectorSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import FlowContext from "../context/FlowContext";
 import { createInstruction } from "../lib/createInstruction";
-import InstructionRunner from "./InstructionRunner";
+import InstructionRunner from "../InstructionsRunner/InstructionRunner";
 import downloadObjectAsJson from "../lib/downloadObjectAsJSON";
+
+import { setScale, decrement, increment } from "./scaleSlice";
+import { RootState } from "../app/rootReducer";
 
 export default function Header() {
   const {
     flowNodeUIState: { flowNodeUI },
     linkNodeState: { linkNode },
-    flowAreaZoomState: { setFlowAreaZoom }
   } = useContext(FlowContext)!;
   const [displayRunner, setDisplayRunner] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const zoomKeyInput = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.match(/\=|\+/)) {
+        e.preventDefault();
+        return onZoom("plus");
+      }
+      if (e.ctrlKey && e.key.match(/\_|\-/)) {
+        e.preventDefault();
+        return onZoom("minus");
+      }
+    };
+    document.addEventListener("keydown", zoomKeyInput);
+    return () => {
+      document.removeEventListener("keydown", zoomKeyInput);
+    };
+  }, []);
 
   const onZoom = (zoom: "plus" | "minus" | "reset") => {
     switch (zoom) {
       case "minus":
-        return setFlowAreaZoom(prev => (prev <= 10 ? prev : prev - 5));
+        dispatch(decrement());
+        break;
       case "plus":
-        return setFlowAreaZoom(prev => (prev >= 150 ? prev : prev + 5));
+        dispatch(increment());
+        break;
       case "reset":
-        return setFlowAreaZoom(() => 100);
+        dispatch(setScale(100));
+        break;
     }
   };
   const onSave = () => {
