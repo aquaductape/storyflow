@@ -1,16 +1,25 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { RootState } from "../../app/rootReducer";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import LinkNodeContainer from "../NodeLinks";
 import GhostNodeContainer from "../NodeLinks/GhostNodeContainer";
 import FlowShapes from "../FlowShapes/index";
+import { setScrollPosition } from "./scrollPositionSlice";
+import { updateGhostNodeLink } from "../../ContextMenu/flowNodesSlice";
 
 export default function FlowArea() {
   const areaInnerRef = useRef<HTMLDivElement>(null);
-  const [scrollPosition, setScrollPosition] = useState({ top: 0, left: 0 });
+  const [scrollPosition, setScrollPositionState] = useState({
+    top: 0,
+    left: 0,
+  });
+  const dispatch = useDispatch();
 
   const flowAreaZoom = useSelector(
     (state: RootState) => state.scale.scaleAmount
+  );
+  const nodeLinkGhost = useSelector(
+    (state: RootState) => state.flowNodes.nodeLinkGhost
   );
 
   useEffect(() => {
@@ -23,7 +32,32 @@ export default function FlowArea() {
   const onScroll = (e: React.UIEvent) => {
     const target = e.target as HTMLElement;
     const { scrollTop, scrollLeft } = target;
-    setScrollPosition(() => ({ top: scrollTop, left: scrollLeft }));
+    const { top, left } = scrollPosition;
+    const scale = flowAreaZoom / 100;
+    let x2 = 0;
+    let y2 = 0;
+    dispatch(setScrollPosition({ top: scrollTop, left: scrollLeft }));
+
+    setScrollPositionState(() => ({ top: scrollTop, left: scrollLeft }));
+
+    if (!nodeLinkGhost) return null;
+
+    y2 = scrollTop - top;
+    y2 *= 1 / scale;
+    x2 = scrollLeft - left;
+    x2 *= 1 / scale;
+
+    if (scrollTop > top) {
+      dispatch(updateGhostNodeLink({ y2 }));
+    } else if (scrollTop < top) {
+      dispatch(updateGhostNodeLink({ y2 }));
+    }
+
+    if (scrollLeft > left) {
+      dispatch(updateGhostNodeLink({ x2 }));
+    } else if (scrollLeft < left) {
+      dispatch(updateGhostNodeLink({ x2 }));
+    }
   };
 
   return (

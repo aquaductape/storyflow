@@ -3,9 +3,9 @@ import { FlowJsonData, FlowNodeUI } from "../ts/models/FlowInstructionData";
 import FlowContext from "./FlowContext";
 import { ILinkNode, IGhostArrow } from "../ts/models/LinkNode";
 import { FlowConnecting, FlowScrollPosition } from "../ts/models/FlowContext";
-import { useAsyncSetState } from "../lib/useAsyncSetState";
-import lsStorage from "../lib/lsStorage";
-import { updateNodes, updateNodeLinks } from "../lib/updateInstructions";
+import { useAsyncSetState } from "../utils/useAsyncSetState";
+import lsStorage from "../utils/lsStorage";
+import { updateNodes, updateNodeLinks } from "../utils/updateInstructions";
 
 const FlowProvider = (props: React.Props<any>) => {
   const [flowJsonData, setFlowJsonData] = useState<FlowJsonData[]>([]);

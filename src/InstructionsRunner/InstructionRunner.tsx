@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import FlowContext from "../context/FlowContext";
-import { createInstruction } from "../lib/createInstruction";
-import instructionEvent from "../lib/instructionEvent";
+import { createInstruction } from "../utils/createInstruction";
+import instructionEvent from "../utils/instructionEvent";
 import {
   FlowJsonData,
   FlowInstruction,

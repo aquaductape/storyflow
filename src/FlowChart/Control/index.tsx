@@ -1,18 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ReactComponent as IconMenu } from "../../assets/ant-menu.svg";
 import { ReactComponent as IconClose } from "../../assets/close.svg";
 import { ReactComponent as IconLinkNode } from "../../assets/link-node.svg";
 import { ReactComponent as IconLinkNodeRemove } from "../../assets/link-node-remove.svg";
-import addEscapeHatch from "../../lib/addEscapeHatch";
-import { closestPointCoor } from "../../lib/closestPoint";
+import addEscapeHatch from "../../utils/addEscapeHatch";
+import { closestPointCoor } from "../../utils/closestPoint";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/rootReducer";
 import {
   setGhostNodeLink,
   removeGhostNodeLink,
   setNodeConnecting,
+  createAnswerNode,
+  renderNodeLink,
+  establishLinkage,
+  removeNode,
 } from "../../ContextMenu/flowNodesSlice";
-import { onCreateArrow } from "../../lib/createArrow";
 
 type IFlowControl = {
   id: string;
@@ -20,41 +23,46 @@ type IFlowControl = {
   arrowTo?: string | undefined;
 };
 
-const refScrollPosition = { left: 0, top: 0 };
-const refConnecting = { connecting: false };
-let escapeHatchListener: any;
 export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const btnRemoveNodeRef = useRef<HTMLDivElement>(null);
   const btnCreateArrowRef = useRef<HTMLDivElement>(null);
   const [isStartDrag, setIsStartDrag] = useState(false);
+
   const dispatch = useDispatch();
-  // const [scale, setScale] = useState(100);
-  // const [scrollPosition, setScrollPosition] = useState({ top: 0, left: 0 });
+  const areaInnerRef = useRef<HTMLElement | null>(null);
   const isNodeConnecting = useSelector(
     (state: RootState) => state.flowNodes.isNodeConnecting
   );
+  const nodeLinks = useSelector(
+    (state: RootState) => state.flowNodes.nodeLinks
+  );
+  const nodes = useSelector((state: RootState) => state.flowNodes.nodes);
 
-  // const flowAreaZoom = 100;
-  const [linkNodeToggle, setLinkNodeToggle] = useState(false);
-  // useEffect(() => {
-  //   refScrollPosition.left = scrollPosition.left;
-  //   refScrollPosition.top = scrollPosition.top;
-  // }, [scrollPosition.left, scrollPosition.top]);
-
-  // needs rework, goal, modal listener,
-  const onGhostArrow = (e: React.MouseEvent) => {
-    const flowChartContainer = document.querySelector(
+  useEffect(() => {
+    const areaInner = document.querySelector(
       ".flow-area-inner"
     )! as HTMLElement;
+    areaInnerRef.current = areaInner;
+  }, []);
+
+  const getScale = () => {
+    const { dataset } = areaInnerRef.current!;
+    return parseInt(dataset.areaZoom!);
+  };
+  const getScrollPosition = () => {
+    const { dataset } = areaInnerRef.current!;
+    const top = parseInt(dataset.areaScrollPositionTop!);
+    const left = parseInt(dataset.areaScrollPositionLeft!);
+    return { top, left };
+  };
+  // needs rework, goal, modal listener,
+  const onGhostArrow = (e: React.MouseEvent) => {
+    const flowChartContainer = areaInnerRef.current!;
     const idEl = document.getElementById(id)!;
-    const scrollPositionLeft = parseInt(
-      flowChartContainer.dataset.areaScrollPositionLeft!
-    );
-    const scrollPositionTop = parseInt(
-      flowChartContainer.dataset.areaScrollPositionTop!
-    );
-    const scale = parseInt(flowChartContainer.dataset.areaZoom!) / 100;
+
     let trackGhostArrow = (e: MouseEvent) => {
+      const scrollPosition = getScrollPosition();
+      const scale = getScale() / 100;
       const x = e.clientX;
       const y = e.clientY;
       console.log({ x, y });
@@ -65,52 +73,68 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
         scale,
       });
 
-      result.x1 += scrollPositionLeft * (1 / scale);
-      result.x2 += scrollPositionLeft * (1 / scale);
-      result.y1 += scrollPositionTop * (1 / scale);
-      result.y2 += scrollPositionTop * (1 / scale);
+      result.x1 += scrollPosition.left * (1 / scale);
+      result.x2 += scrollPosition.left * (1 / scale);
+      result.y1 += scrollPosition.top * (1 / scale);
+      result.y2 += scrollPosition.top * (1 / scale);
 
       dispatch(setGhostNodeLink({ ...result, scale, strokeDashArray: "12px" }));
     };
 
-    escapeHatchListener = addEscapeHatch({
+    addEscapeHatch({
       target: btnCreateArrowRef.current!,
       build: () => {
         console.log("add");
         flowChartContainer.addEventListener("mousemove", trackGhostArrow);
         dispatch(setNodeConnecting({ fromId: id, toId: "", connecting: true }));
       },
+      onStart: (e) => {
+        const target = e.event.target as HTMLElement;
+        if (target.closest(".flow-connecting")) {
+          dispatch(removeGhostNodeLink());
+          flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
+          return false;
+        }
+        return true;
+      },
       onExit: () => {
         console.log("delete");
         dispatch(removeGhostNodeLink());
         flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
 
-        setTimeout(() => {
-          dispatch(
-            setNodeConnecting({
-              fromId: "",
-              toId: "",
-              connecting: false,
-            })
-          );
-        }, 100);
+        dispatch(
+          setNodeConnecting({
+            fromId: "",
+            toId: "",
+            connecting: false,
+          })
+        );
       },
     });
   };
 
   const onRemoveNode = () => {
     console.log("remove");
+    dispatch(removeNode(id));
   };
 
   const onConnectNodes = () => {
-    onCreateArrow({
-      currentTarget,
-      is,
-      setFlowConnecting,
-      setFlowNodeUI,
-      setSvgArrows: setLinkNode,
-      scrollPosition,
-    });
+    const scrollPosition = getScrollPosition();
+
+    dispatch(establishLinkage({ id }));
+    // create answer if from node is a descision
+    dispatch(createAnswerNode({ id, scrollPosition }));
+
+    setTimeout(() => {
+      dispatch(renderNodeLink({ id, scrollPosition }));
+      dispatch(
+        setNodeConnecting({
+          fromId: "",
+          toId: "",
+          connecting: false,
+        })
+      );
+    }, 100);
   };
 
   return (

@@ -15,5 +15,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src", "src/lib/pagemap.js"]
+  "include": ["src"]
 }

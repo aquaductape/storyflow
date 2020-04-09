@@ -1,6 +1,6 @@
 import { FlowJsonData, FlowNodeUI } from "./FlowInstructionData";
 import { ILinkNode, IGhostArrow } from "./LinkNode";
-import { AsyncSetState } from "../../lib/useAsyncSetState";
+import { AsyncSetState } from "../../utils/useAsyncSetState";
 
 export type FlowConnecting = {
   fromId: string;

@@ -1,31 +1,40 @@
-import React, { useContext, useState } from "react";
-import FlowContext from "../../context/FlowContext";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import FlowShape from "./FlowShape";
 import { DraggableEvent } from "react-draggable";
-import { onCreateArrow } from "../../lib/createArrow";
-import {
-  removeNode,
-  removeAllArrows,
-  removeArrow,
-} from "../../lib/removeShape";
-import { connectElementsCooridinates } from "../../lib/connectElementsCooridinates";
-import { convertToText } from "../../lib/contentEditable";
+import { convertToText } from "../../utils/contentEditable";
 import { RootState } from "../../app/rootReducer";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  editNodePosition,
+  changeLinksPositionOnNode,
+  editNodeContent,
+} from "../../ContextMenu/flowNodesSlice";
 
-export default React.memo(function FlowShupes() {
-  const {
-    flowNodeUIState: { setFlowNodeUI },
-    // flowNodeUIState: { flowNodeUI, setFlowNodeUI },
-    flowConnectState: { isFlowConnecting, setFlowConnecting },
-    linkNodeState: { setLinkNode },
-  } = useContext(FlowContext)!;
-
-  const flowNodeUI = useSelector((state: RootState) => state.flowNodes.nodes);
+export default React.memo(function FlowShapes() {
+  const dispatch = useDispatch();
+  const areaInnerRef = useRef<HTMLElement | null>(null);
   const [activeDrags, setActiveDrags] = useState(0);
-  const [isStartDrag, setIsStartDrag] = useState(false);
-  const [scale, setScale] = useState(100);
-  const [scrollPosition, setScrollPosition] = useState({ top: 0, left: 0 });
+
+  const nodes = useSelector((state: RootState) => state.flowNodes.nodes);
+
+  useEffect(() => {
+    const areaInner = document.querySelector(
+      ".flow-area-inner"
+    )! as HTMLElement;
+    areaInnerRef.current = areaInner;
+  }, []);
+
+  const getScrollPosition = () => {
+    const { dataset } = areaInnerRef.current!;
+    const top = parseInt(dataset.areaScrollPositionTop!);
+    const left = parseInt(dataset.areaScrollPositionLeft!);
+    return { top, left };
+  };
+
+  const getScale = () => {
+    const { dataset } = areaInnerRef.current!;
+    return parseInt(dataset.areaZoom!);
+  };
 
   const dragStart = () => {
     setActiveDrags((prev) => ++prev);
@@ -43,14 +52,6 @@ export default React.memo(function FlowShupes() {
       target.closest(".flow-btn-create-arrow") ||
       target.closest(".flow-connecting")
     ) {
-      // onCreateArrow({
-      //   currentTarget,
-      //   isFlowConnecting,
-      //   setFlowConnecting,
-      //   setFlowNodeUI,
-      //   setSvgArrows: setLinkNode,
-      //   scrollPosition,
-      // });
       return false;
     }
     if (target.closest(".flow-btn-remove-node")) {
@@ -82,20 +83,7 @@ export default React.memo(function FlowShupes() {
 
     const [translateX, translateY] = matchTransform.map((el) => parseInt(el));
 
-    setFlowNodeUI((prev) => {
-      if (parentId) {
-        const parent = prev.find((item) => item.id === parentId)!;
-        const item = parent.answers!.find((item) => item.id === id)!;
-        item.translateX = translateX;
-        item.translateY = translateY;
-        return [...prev];
-      }
-      const item = prev.find((item) => item.id === id)!;
-      item.translateX = translateX;
-      item.translateY = translateY;
-      return [...prev];
-    });
-    setIsStartDrag(() => false);
+    dispatch(editNodePosition({ id, parentId, translateX, translateY }));
   };
 
   const onDrag = ({
@@ -107,46 +95,10 @@ export default React.memo(function FlowShupes() {
   }) => {
     if (!isConnected) return;
 
-    if (!isStartDrag) {
-      const areaInner = document.querySelector(
-        ".flow-area-inner"
-      )! as HTMLElement;
-      const scaleData = parseInt(areaInner.dataset.areaZoom!);
-      const scrollTopData = parseInt(areaInner.dataset.areaScrollPositionTop!);
-      const scrollLeftData = parseInt(
-        areaInner.dataset.areaScrollPositionLeft!
-      );
+    const scrollPosition = getScrollPosition();
+    const scale = getScale() / 100;
 
-      setIsStartDrag(() => true);
-      setScale(() => scaleData / 100);
-      setScrollPosition(() => ({ top: scrollTopData, left: scrollLeftData }));
-      return;
-    }
-
-    setLinkNode((prev) => {
-      for (let i = 0; i < prev.length; i++) {
-        const item = prev[i];
-
-        if (item.fromId === id || item.toId === id) {
-          const { fromId, toId, id } = item;
-          const updatedCooridinates = connectElementsCooridinates({
-            fromId,
-            toId,
-            color: "#000",
-            tension: 0,
-            scale,
-          });
-
-          updatedCooridinates.x1 += scrollPosition.left * (1 / scale);
-          updatedCooridinates.x2 += scrollPosition.left * (1 / scale);
-          updatedCooridinates.y1 += scrollPosition.top * (1 / scale);
-          updatedCooridinates.y2 += scrollPosition.top * (1 / scale);
-
-          prev[i] = { ...updatedCooridinates, fromId, toId, id, scale };
-        }
-      }
-      return [...prev];
-    });
+    dispatch(changeLinksPositionOnNode({ id, scale, scrollPosition }));
   };
 
   const onChangeDirection = (currentTarget: HTMLElement): false => {
@@ -162,24 +114,25 @@ export default React.memo(function FlowShupes() {
   ) => {
     const target = e.currentTarget;
     const content = convertToText(target.innerHTML);
+    dispatch(editNodeContent({ id, parentId, content }));
 
-    setFlowNodeUI((prev) => {
-      if (parentId) {
-        const parent = prev.find((item) => item.id === parentId)!;
-        const item = parent.answers!.find((item) => item.id === id)!;
-        item.content = content;
-        return [...prev];
-      }
+    // setFlowNodeUI((prev) => {
+    //   if (parentId) {
+    //     const parent = prev.find((item) => item.id === parentId)!;
+    //     const item = parent.answers!.find((item) => item.id === id)!;
+    //     item.content = content;
+    //     return [...prev];
+    //   }
 
-      const item = prev.find((item) => item.id === id)!;
-      item.content = content;
+    //   const item = prev.find((item) => item.id === id)!;
+    //   item.content = content;
 
-      return [...prev];
-    });
+    //   return [...prev];
+    // });
   };
   return (
     <>
-      {flowNodeUI.map(
+      {nodes.map(
         ({
           id,
           type,

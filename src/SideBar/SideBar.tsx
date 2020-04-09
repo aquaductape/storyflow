@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import FlowContext from "../context/FlowContext";
-import { createInstruction } from "../lib/createInstruction";
+import { createInstruction } from "../utils/createInstruction";
 
 export default function SideBar() {
   const {

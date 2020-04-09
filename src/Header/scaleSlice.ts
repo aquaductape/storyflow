@@ -12,19 +12,6 @@ const scaleSlice = createSlice({
   name: "scale",
   initialState,
   reducers: {
-    // displayRepo(state, action: PayloadAction<CurrentRepo>) {
-    //   const { org, repo } = action.payload
-    //   state.org = org
-    //   state.repo = repo
-    // },
-    // setCurrentPage(state, action: PayloadAction<number>) {
-    //   state.page = action.payload
-    // },
-    // setCurrentDisplayType(state, action: PayloadAction<CurrentDisplayPayload>) {
-    //   const { displayType, issueId = null } = action.payload
-    //   state.displayType = displayType
-    //   state.issueId = issueId
-    // }
     increment(state) {
       const { scaleAmount } = state;
       state.scaleAmount = scaleAmount >= 150 ? scaleAmount : scaleAmount + 5;

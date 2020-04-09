@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { ILinkNode } from "../../ts/models/LinkNode";
-import { flowChartContainerTop } from "../../lib/constants";
+import { flowChartContainerTop } from "../../utils/constants";
 
 export default function NodeLink({
   x1,

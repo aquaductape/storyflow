@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,35 +7,58 @@ import {
   faVectorSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import FlowContext from "../context/FlowContext";
-import { createInstruction } from "../lib/createInstruction";
+import { createInstruction } from "../utils/createInstruction";
 import InstructionRunner from "../InstructionsRunner/InstructionRunner";
-import downloadObjectAsJson from "../lib/downloadObjectAsJSON";
+import downloadObjectAsJson from "../utils/downloadObjectAsJSON";
 
 import { setScale, decrement, increment } from "./scaleSlice";
-import { RootState } from "../app/rootReducer";
 
 export default function Header() {
   const {
     flowNodeUIState: { flowNodeUI },
     linkNodeState: { linkNode },
   } = useContext(FlowContext)!;
-  const [displayRunner, setDisplayRunner] = useState(false);
   const dispatch = useDispatch();
+  const [displayRunner, setDisplayRunner] = useState(false);
+  const areaInnerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const zoomKeyInput = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key.match(/\=|\+/)) {
-        e.preventDefault();
-        return onZoom("plus");
+    const areaInner = document.querySelector(
+      ".flow-area-inner"
+    )! as HTMLElement;
+    areaInnerRef.current = areaInner;
+  }, []);
+
+  useEffect(() => {
+    const zoomKeyInput = (e: KeyboardEvent | WheelEvent) => {
+      if (e.type === "wheel") {
+        e = e as WheelEvent;
+        if (e.ctrlKey && e.deltaY < 0) {
+          e.preventDefault();
+          return onZoom("plus");
+        }
+        if (e.ctrlKey && e.deltaY > 0) {
+          e.preventDefault();
+          return onZoom("minus");
+        }
       }
-      if (e.ctrlKey && e.key.match(/\_|\-/)) {
-        e.preventDefault();
-        return onZoom("minus");
+      if (e.type === "keydown") {
+        e = e as KeyboardEvent;
+        if (e.ctrlKey && e.key.match(/\=|\+/)) {
+          e.preventDefault();
+          return onZoom("plus");
+        }
+        if (e.ctrlKey && e.key.match(/\_|\-/)) {
+          e.preventDefault();
+          return onZoom("minus");
+        }
       }
     };
     document.addEventListener("keydown", zoomKeyInput);
+    document.addEventListener("wheel", zoomKeyInput, { passive: false });
     return () => {
-      document.removeEventListener("keydown", zoomKeyInput);
+      document.removeEventListener("keydown", zoomKeyInput, true);
+      document.removeEventListener("wheel", zoomKeyInput);
     };
   }, []);
 

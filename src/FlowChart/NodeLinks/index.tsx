@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import NodeLink from "./NodeLink";
-import { flowChartContainerTop } from "../../lib/constants";
+import { flowChartContainerTop } from "../../utils/constants";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/rootReducer";
 
