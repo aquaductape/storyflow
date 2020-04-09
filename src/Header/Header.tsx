@@ -1,23 +1,17 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearchMinus,
   faSearchPlus,
   faVectorSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import FlowContext from "../context/FlowContext";
-import { createInstruction } from "../utils/createInstruction";
 import InstructionRunner from "../InstructionsRunner/InstructionRunner";
-import downloadObjectAsJson from "../utils/downloadObjectAsJSON";
+import { saveWork, exportWork } from "../ContextMenu/flowNodesSlice";
 
 import { setScale, decrement, increment } from "./scaleSlice";
 
 export default function Header() {
-  const {
-    flowNodeUIState: { flowNodeUI },
-    linkNodeState: { linkNode },
-  } = useContext(FlowContext)!;
   const dispatch = useDispatch();
   const [displayRunner, setDisplayRunner] = useState(false);
   const areaInnerRef = useRef<HTMLElement | null>(null);
@@ -76,10 +70,7 @@ export default function Header() {
     }
   };
   const onSave = () => {
-    const uiNodesStr = JSON.stringify(flowNodeUI);
-    const svgArrowsStr = JSON.stringify(linkNode);
-    localStorage.setItem("UINodes", uiNodesStr);
-    localStorage.setItem("SVGArrows", svgArrowsStr);
+    dispatch(saveWork());
   };
 
   const onRun = () => {
@@ -87,8 +78,7 @@ export default function Header() {
   };
 
   const onExport = () => {
-    const data = createInstruction(flowNodeUI);
-    downloadObjectAsJson(data, "storyflow");
+    dispatch(exportWork({ type: "json" }));
   };
   return (
     <header className="main-header">

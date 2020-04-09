@@ -10,6 +10,8 @@ import {
   establishLinkage as establishLinkageI,
   renderNodeLink as renderNodeLinkI,
 } from "../utils/connectNodesWithLink";
+import { createInstruction } from "../utils/createInstruction";
+import downloadObjectAsJson from "../utils/downloadObjectAsJSON";
 
 export type CurrentNodeState = {
   nodes: FlowNodeUI[];
@@ -33,6 +35,22 @@ const flowNodesSlice = createSlice({
   name: "nodes",
   initialState,
   reducers: {
+    exportWork(
+      state,
+      action: PayloadAction<{ type: "json" | "yaml" | "xml" }>
+    ) {
+      const { nodes } = state;
+      const data = createInstruction(nodes);
+      downloadObjectAsJson(data, "storyflow");
+    },
+    saveWork(state) {
+      const { nodeLinks, nodes } = state;
+
+      const uiNodesStr = JSON.stringify(nodes);
+      const svgArrowsStr = JSON.stringify(nodeLinks);
+      localStorage.setItem("UINodes", uiNodesStr);
+      localStorage.setItem("SVGArrows", svgArrowsStr);
+    },
     setGhostNodeLink(state, action: PayloadAction<IGhostArrow>) {
       const { payload } = action;
       state.nodeLinkGhost = payload;
@@ -105,10 +123,11 @@ const flowNodesSlice = createSlice({
 
       // using filter to remove references of removed item, on other items
       state.nodes = state.nodes.filter((node) => {
-        if (isFound) return true;
+        // if (isFound) return true;
+        // debugger;
         if (node.id === id) {
-          state.removedNode = node;
-          isFound = true;
+          // state.removedNode = node;
+          // isFound = true;
           return false;
         }
 
@@ -128,16 +147,40 @@ const flowNodesSlice = createSlice({
             if (answer.id === id) {
               isFound = true;
               state.removedNodeAnswer = answer;
-              return true;
+              return false;
             }
-            return false;
+            return true;
           });
         }
+        return true;
       });
     },
     addNodeLink(state, action: PayloadAction<ILinkNode>) {
       const nodeLink = action.payload;
       state.nodeLinks.push(nodeLink);
+    },
+    removeNodeConnection(
+      state,
+      action: PayloadAction<{ id: string; type: string }>
+    ) {
+      const { nodes } = state;
+      const { id, type } = action.payload;
+
+      if (type === "answer") {
+        nodes.find((node) => {
+          if (node.answers) {
+            const answerNode = node.answers.find((answer) => answer.id === id);
+
+            if (answerNode) {
+              answerNode.arrowTo = "";
+            }
+          }
+        });
+      } else {
+        const node = nodes.find((node) => node.id === id)!;
+        node.arrowTo = "";
+        node.isConnected = false;
+      }
     },
     changeLinksPositionOnNode(
       state,
@@ -178,14 +221,40 @@ const flowNodesSlice = createSlice({
         }
       }
     },
-    removeOrphanNodeLinks(state, action: PayloadAction<string>) {
-      const { removedNode, removedNodeAnswer } = state;
-      const id = action.payload;
-      if (removedNode && removedNode.arrowFrom) {
-        state.nodeLinks = state.nodeLinks.filter((nodeLink) => {
-          if (nodeLink.fromId === id || nodeLink.toId === id) {
+    removeNodeLinkByNodeId(state, action: PayloadAction<string>) {
+      const fromId = action.payload;
+
+      const idx = state.nodeLinks.findIndex(
+        (nodeLink) => nodeLink.fromId === fromId
+      );
+      if (idx > -1) {
+        state.nodeLinks.splice(idx, 1);
+      }
+    },
+    removeOrphanNodeLinks(
+      state,
+      action: PayloadAction<{ id: string; type: string }>
+    ) {
+      const { id, type } = action.payload;
+      const decisionSiblingArrow = <{ [key: string]: boolean | undefined }>{};
+
+      if (type === "decision") {
+        state.nodeLinks = state.nodeLinks.filter((item) => {
+          if (item.toId === id) return false;
+
+          if (item.fromId === id) {
+            decisionSiblingArrow[item.toId] = true;
             return false;
           }
+          if (decisionSiblingArrow[item.fromId]) return false;
+          return true;
+        });
+      } else {
+        state.nodeLinks = state.nodeLinks.filter((item) => {
+          if (item.fromId === id || item.toId === id) {
+            return false;
+          }
+          return true;
         });
       }
     },
@@ -196,13 +265,16 @@ const flowNodesSlice = createSlice({
 });
 
 export const {
+  exportWork,
+  saveWork,
   addNode,
+  removeNodeConnection,
   editNodePosition,
   editNodeContent,
   removeNode,
   addNodeLink,
   changeLinksPositionOnNode,
-  removeOrphanNodeLinks: removeNodeLink,
+  removeOrphanNodeLinks,
   removeGhostNodeLink,
   setGhostNodeLink,
   updateGhostNodeLink,
@@ -210,6 +282,7 @@ export const {
   createAnswerNode,
   establishLinkage,
   renderNodeLink,
+  removeNodeLinkByNodeId,
 } = flowNodesSlice.actions;
 
 export default flowNodesSlice.reducer;

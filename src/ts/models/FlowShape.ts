@@ -1,7 +1,7 @@
 import {
   DraggableEventHandler,
   DraggableData,
-  DraggableEvent
+  DraggableEvent,
 } from "react-draggable";
 import { FlowType, FlowNodeUI } from "./FlowInstructionData";
 
@@ -47,7 +47,7 @@ export interface FlowDraggable
     onStop: ({
       id,
       parentId,
-      element
+      element,
     }: {
       id: string;
       parentId?: string;

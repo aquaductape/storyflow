@@ -1,29 +1,27 @@
 import React, { useState, useContext, useEffect } from "react";
-import FlowContext from "../context/FlowContext";
 import { createInstruction } from "../utils/createInstruction";
 import instructionEvent from "../utils/instructionEvent";
 import {
   FlowJsonData,
   FlowInstruction,
 } from "../ts/models/FlowInstructionData";
+import { useSelector } from "react-redux";
+import { RootState } from "../app/rootReducer";
 
 export default function InstructionRunner({
   setDisplayRunner,
 }: {
   setDisplayRunner: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const {
-    flowNodeUIState: { flowNodeUI },
-    flowJsonDataState: { flowJsonData, setFlowJsonData },
-  } = useContext(FlowContext)!;
-
   const [isFinishedBuilding, setIsFinishedBuilding] = useState(false);
   const [isFinishedInstruction, setIsFinishedInstruction] = useState(false);
+  const [flowJsonData, setFlowJsonData] = useState<FlowJsonData[]>([]);
   const [currentStep, setCurrentStep] = useState<FlowJsonData>();
   const [instruction, setInstruction] = useState<FlowInstruction>();
+  const nodes = useSelector((state: RootState) => state.flowNodes.nodes);
 
   useEffect(() => {
-    const data = createInstruction(flowNodeUI);
+    const data = createInstruction(nodes);
     setFlowJsonData(() => [...data]);
     const instruction = instructionEvent(data);
     setCurrentStep(instruction.getCurrentItem());

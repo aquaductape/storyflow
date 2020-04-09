@@ -130,6 +130,9 @@ export default React.memo(function FlowShapes() {
     //   return [...prev];
     // });
   };
+  useEffect(() => {
+    console.log(nodes);
+  }, [nodes]);
   return (
     <>
       {nodes.map(

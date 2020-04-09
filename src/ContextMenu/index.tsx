@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
-import FlowContext from "../context/FlowContext";
+import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
-import { FlowType, FlowNodeUI } from "../ts/models/FlowInstructionData";
-import { Menu, Item, MenuProvider } from "react-contexify";
+import { FlowType } from "../ts/models/FlowInstructionData";
+import { Menu, Item } from "react-contexify";
 import { TriggerEvent } from "react-contexify/lib/types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/rootReducer";
@@ -23,7 +22,7 @@ export default function ContextMenu() {
   const [hasStart, setHasStart] = useState(hasFlowHasStart);
 
   const addFlowShape = (e: TriggerEvent, type: FlowType) => {
-    const { pageX, pageY, clientX, clientY } = e;
+    const { clientX, clientY } = e;
 
     const scale = flowAreaZoom === 100 ? 1 : flowAreaZoom / 100 + 1;
     dispatch(

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./App.scss";
-import FlowProvider from "../context/FlowProvider";
 import FlowArea from "../FlowChart/Area";
 import ContextMenu from "../ContextMenu";
 import { MenuProvider } from "react-contexify";
@@ -12,15 +11,13 @@ function App() {
   return (
     <>
       <div className="App">
-        <FlowProvider>
-          <Header></Header>
-          {/* <SideBar></SideBar> */}
-          {/* <Modal modalColor={"error"}></Modal> */}
-          <MenuProvider id="flow-context-menu-root" className="menu-provider">
-            <FlowArea></FlowArea>
-          </MenuProvider>
-          <ContextMenu></ContextMenu>
-        </FlowProvider>
+        <Header></Header>
+        {/* <SideBar></SideBar> */}
+        {/* <Modal modalColor={"error"}></Modal> */}
+        <MenuProvider id="flow-context-menu-root" className="menu-provider">
+          <FlowArea></FlowArea>
+        </MenuProvider>
+        <ContextMenu></ContextMenu>
       </div>
     </>
   );

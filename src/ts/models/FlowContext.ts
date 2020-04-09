@@ -1,6 +1,5 @@
 import { FlowJsonData, FlowNodeUI } from "./FlowInstructionData";
 import { ILinkNode, IGhostArrow } from "./LinkNode";
-import { AsyncSetState } from "../../utils/useAsyncSetState";
 
 export type FlowConnecting = {
   fromId: string;
@@ -24,11 +23,9 @@ export interface IFlowContext {
   };
   flowNodeUIState: {
     flowNodeUI: FlowNodeUI[];
-    setFlowNodeUI: AsyncSetState<FlowNodeUI[]>;
   };
   flowConnectState: {
     isFlowConnecting: FlowConnecting;
-    setFlowConnecting: AsyncSetState<FlowConnecting>;
   };
   linkNodeState: {
     linkNode: ILinkNode[];

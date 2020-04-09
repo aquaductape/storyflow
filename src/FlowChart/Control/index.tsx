@@ -15,6 +15,9 @@ import {
   renderNodeLink,
   establishLinkage,
   removeNode,
+  removeOrphanNodeLinks,
+  removeNodeLinkByNodeId,
+  removeNodeConnection,
 } from "../../ContextMenu/flowNodesSlice";
 
 type IFlowControl = {
@@ -26,17 +29,12 @@ type IFlowControl = {
 export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   const btnRemoveNodeRef = useRef<HTMLDivElement>(null);
   const btnCreateArrowRef = useRef<HTMLDivElement>(null);
-  const [isStartDrag, setIsStartDrag] = useState(false);
 
   const dispatch = useDispatch();
   const areaInnerRef = useRef<HTMLElement | null>(null);
   const isNodeConnecting = useSelector(
     (state: RootState) => state.flowNodes.isNodeConnecting
   );
-  const nodeLinks = useSelector(
-    (state: RootState) => state.flowNodes.nodeLinks
-  );
-  const nodes = useSelector((state: RootState) => state.flowNodes.nodes);
 
   useEffect(() => {
     const areaInner = document.querySelector(
@@ -65,7 +63,7 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
       const scale = getScale() / 100;
       const x = e.clientX;
       const y = e.clientY;
-      console.log({ x, y });
+      // console.log({ x, y });
 
       const result = closestPointCoor({
         elFrom: idEl,
@@ -84,7 +82,6 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
     addEscapeHatch({
       target: btnCreateArrowRef.current!,
       build: () => {
-        console.log("add");
         flowChartContainer.addEventListener("mousemove", trackGhostArrow);
         dispatch(setNodeConnecting({ fromId: id, toId: "", connecting: true }));
       },
@@ -98,7 +95,6 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
         return true;
       },
       onExit: () => {
-        console.log("delete");
         dispatch(removeGhostNodeLink());
         flowChartContainer.removeEventListener("mousemove", trackGhostArrow);
 
@@ -114,8 +110,8 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
   };
 
   const onRemoveNode = () => {
-    console.log("remove");
     dispatch(removeNode(id));
+    dispatch(removeOrphanNodeLinks({ id, type }));
   };
 
   const onConnectNodes = () => {
@@ -135,6 +131,11 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
         })
       );
     }, 100);
+  };
+
+  const onRemoveArrow = () => {
+    dispatch(removeNodeLinkByNodeId(id));
+    dispatch(removeNodeConnection({ id, type }));
   };
 
   return (
@@ -162,7 +163,10 @@ export default function FlowControl({ id, arrowTo, type }: IFlowControl) {
               <IconLinkNode></IconLinkNode>
             </div>
           ) : (
-            <div className="link-node-remove flow-btn-remove-arrow">
+            <div
+              className="link-node-remove flow-btn-remove-arrow"
+              onClick={onRemoveArrow}
+            >
               <IconLinkNodeRemove></IconLinkNodeRemove>
             </div>
           )}
